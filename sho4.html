@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>ダンスステージ — 中1 数学・英語</title>
+<title>バトルアリーナ — 小4 算数・英語</title>
 <style>
 /* ===== 共通スタイル（テーマはトークンで切替） ===== */
 * { box-sizing: border-box; }
@@ -349,7 +349,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 </head>
 <body>
 <!--BODY-START-->
-<div class="app-root" data-app-theme="dance">
+<div class="app-root" data-app-theme="arena">
 <div class="app" id="app">
 
   <!-- ホーム -->
@@ -1598,169 +1598,136 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 
 </script>
 <script>
-/* ===== 中1プロフィール（ダンスステージ） ===== */
+/* ===== 小4プロフィール（バトルアリーナ） =====
+ * 学習範囲: 小3・小4（算数）＋外国語活動 Let's Try! 1・2相当（英語=聞く中心）
+ * 学習者: アルファベットから怪しい前提 → 英語は聞き取り＋アルファベット習得を柱にする
+ */
 (function (global) {
   "use strict";
 
-  // 語彙は光村図書「Here We Go!」（宇治市=山城採択地区）中1の題材に合わせている
-  var VOCAB = [
+  // 聞き取り単語（Let's Try! 1・2の題材: 色・数・動物・食べ物・スポーツ・天気・曜日・形・文房具）
+  var WORDS = [
+    ["red", "赤"], ["blue", "青"], ["yellow", "黄色"], ["green", "緑"],
+    ["black", "黒"], ["white", "白"], ["pink", "ピンク"], ["orange", "オレンジ色"],
+    ["purple", "むらさき"], ["brown", "茶色"],
+    ["one", "1"], ["two", "2"], ["three", "3"], ["four", "4"], ["five", "5"],
+    ["six", "6"], ["seven", "7"], ["eight", "8"], ["nine", "9"], ["ten", "10"],
+    ["eleven", "11"], ["twelve", "12"], ["twenty", "20"],
+    ["dog", "犬"], ["cat", "ねこ"], ["rabbit", "うさぎ"], ["bear", "くま"],
+    ["monkey", "さる"], ["bird", "鳥"], ["fish", "魚"], ["snake", "へび"],
+    ["apple", "りんご"], ["banana", "バナナ"], ["grape", "ぶどう"], ["peach", "もも"],
+    ["melon", "メロン"], ["tomato", "トマト"], ["ice cream", "アイスクリーム"], ["pizza", "ピザ"],
+    ["hamburger", "ハンバーガー"], ["cake", "ケーキ"], ["milk", "牛乳"], ["juice", "ジュース"],
+    ["soccer", "サッカー"], ["baseball", "野球"], ["tennis", "テニス"], ["swimming", "水泳"],
+    ["dodgeball", "ドッジボール"], ["basketball", "バスケットボール"],
+    ["sunny", "晴れ"], ["rainy", "雨"], ["cloudy", "くもり"], ["snowy", "雪"],
+    ["hot", "あつい"], ["cold", "さむい"],
     ["Monday", "月曜日"], ["Tuesday", "火曜日"], ["Wednesday", "水曜日"], ["Thursday", "木曜日"],
-    ["Friday", "金曜日"], ["Saturday", "土曜日"], ["Sunday", "日曜日"], ["today", "今日"],
-    ["science", "理科"], ["P.E.", "体育"], ["art", "美術"], ["Japanese", "国語・日本語"],
-    ["social studies", "社会科"], ["English", "英語"], ["favorite", "お気に入りの"], ["subject", "教科"],
-    ["club", "部活・クラブ"], ["practice", "練習する"], ["team", "チーム"], ["festival", "祭り"],
-    ["school", "学校"], ["teacher", "先生"], ["student", "生徒"], ["friend", "友だち"],
-    ["family", "家族"], ["father", "父"], ["mother", "母"], ["brother", "兄・弟"],
-    ["sister", "姉・妹"], ["morning", "朝"], ["afternoon", "午後"], ["night", "夜"],
-    ["book", "本"], ["pen", "ペン"], ["desk", "つくえ"], ["chair", "いす"],
-    ["bag", "かばん"], ["ball", "ボール"], ["dog", "犬"], ["cat", "ねこ"],
-    ["bird", "鳥"], ["fish", "魚"], ["apple", "りんご"], ["egg", "たまご"],
-    ["milk", "牛乳"], ["water", "水"], ["breakfast", "朝食"], ["lunch", "昼食"],
-    ["dinner", "夕食"], ["house", "家"], ["room", "部屋"], ["park", "公園"],
-    ["library", "図書館"], ["music", "音楽"], ["math", "数学"], ["soccer", "サッカー"],
-    ["baseball", "野球"], ["volleyball", "バレーボール"], ["Japan", "日本"], ["dance", "おどる・ダンス"],
-    ["like", "〜が好きだ"], ["play", "（スポーツを）する・演奏する"], ["study", "勉強する"], ["run", "走る"],
-    ["swim", "泳ぐ"], ["sing", "歌う"], ["walk", "歩く"], ["eat", "食べる"],
-    ["drink", "飲む"], ["speak", "話す"], ["read", "読む"], ["write", "書く"],
-    ["watch", "（テレビなどを）見る"], ["listen", "聞く"], ["new", "新しい"], ["old", "古い"],
-    ["big", "大きい"], ["small", "小さい"], ["happy", "うれしい"], ["busy", "いそがしい"],
-    ["want", "ほしい・〜したい"], ["know", "知っている"], ["live", "住む"], ["come", "来る"],
-    ["go", "行く"], ["make", "作る"], ["take", "取る・（写真を）とる"], ["get", "手に入れる"],
-    ["see", "見える・会う"], ["meet", "会う"], ["use", "使う"], ["help", "手伝う"],
-    ["open", "開ける"], ["close", "閉める"], ["stand", "立つ"], ["sit", "すわる"],
-    ["teach", "教える"], ["learn", "習う"], ["cook", "料理する"], ["clean", "そうじする"]
+    ["Friday", "金曜日"], ["Saturday", "土曜日"], ["Sunday", "日曜日"],
+    ["circle", "丸"], ["triangle", "三角"], ["square", "四角"], ["star", "星"], ["heart", "ハート"],
+    ["pen", "ペン"], ["pencil", "えんぴつ"], ["eraser", "消しゴム"], ["ruler", "定規"],
+    ["book", "本"], ["bag", "かばん"]
   ];
 
-  var GRAMMAR = [
-    // t1: be動詞
-    { t: 1, q: "I ___ a student.", opts: ["am", "is", "are", "do"], a: 0, exp: "主語が I のとき be動詞は am。" },
-    { t: 1, q: "You ___ my friend.", opts: ["are", "am", "is", "does"], a: 0, exp: "主語が You のとき be動詞は are。" },
-    { t: 1, q: "She ___ a teacher.", opts: ["is", "am", "are", "do"], a: 0, exp: "主語が she/he/it（3人称単数）のとき be動詞は is。" },
-    { t: 1, q: "This ___ my bag.", opts: ["is", "am", "are", "be"], a: 0, exp: "this や it も is を使う仲間。" },
-    { t: 1, q: "Ken and Yumi ___ students.", opts: ["are", "is", "am", "be"], a: 0, exp: "主語が2人以上（複数）のとき be動詞は are。" },
-    { t: 1, q: "I ___ from Kyoto.", opts: ["am", "is", "are", "do"], a: 0, exp: "「〜出身です」は be動詞 + from。I なので am。" },
-    { t: 1, q: "「わたしは13歳です」= I ___ thirteen.", opts: ["am", "is", "have", "do"], a: 0, exp: "年齢も be動詞で表す。I am thirteen." },
-    { t: 1, q: "It ___ sunny today.", opts: ["is", "am", "are", "do"], a: 0, exp: "天気を表す it は is を使う。" },
-    // t2: be動詞の否定・疑問、一般動詞
-    { t: 2, q: "I ___ like math.（数学が好きではない）", opts: ["don't", "am not", "not", "doesn't"], a: 0, exp: "一般動詞（like）の否定は don't を前に置く。" },
-    { t: 2, q: "___ you play soccer?", opts: ["Do", "Are", "Is", "Does"], a: 0, exp: "一般動詞の疑問文は Do で始める。" },
-    { t: 2, q: "___ you a tennis fan?", opts: ["Are", "Do", "Is", "Am"], a: 0, exp: "be動詞の文の疑問文は be動詞で始める。" },
-    { t: 2, q: "She is ___ a student.（生徒ではない）", opts: ["not", "don't", "no", "isn't"], a: 0, exp: "be動詞の否定は be動詞のあとに not。" },
-    { t: 2, q: "I ___ TV every day.", opts: ["watch", "watches", "am watch", "watching"], a: 0, exp: "主語が I の一般動詞はそのままの形。" },
-    { t: 2, q: "We ___ English at school.", opts: ["study", "studies", "are study", "is study"], a: 0, exp: "一般動詞の文に be動詞は入れない。" },
-    { t: 2, q: "「わたしは犬を飼っていません」= I ___ have a dog.", opts: ["don't", "am not", "not", "no"], a: 0, exp: "have は一般動詞なので don't で否定。" },
-    { t: 2, q: "___ they from Osaka? — Yes, they are.", opts: ["Are", "Do", "Is", "Am"], a: 0, exp: "答えが they are なので be動詞の疑問文。" },
-    // t3: can・命令文・混合
-    { t: 3, q: "I ___ swim fast.（速く泳げる）", opts: ["can", "am", "do", "is"], a: 0, exp: "「〜できる」は can + 動詞の原形。" },
-    { t: 3, q: "She can ___ the piano.", opts: ["play", "plays", "playing", "played"], a: 0, exp: "can のあとの動詞はいつも原形。plays にしない。" },
-    { t: 3, q: "___ you dance? — Yes, I can.", opts: ["Can", "Do", "Are", "Is"], a: 0, exp: "can の疑問文は Can で始める。" },
-    { t: 3, q: "I ___ play the guitar.（ひけない）", opts: ["can't", "don't can", "am not", "no"], a: 0, exp: "can の否定は can't（cannot）。" },
-    { t: 3, q: "___ quiet, please.（静かにしてください）", opts: ["Be", "Are", "Is", "Do"], a: 0, exp: "be動詞の命令文は Be で始める。" },
-    { t: 3, q: "___ your homework every day.（宿題をしなさい）", opts: ["Do", "Does", "Are", "Be"], a: 0, exp: "一般動詞の命令文は動詞の原形で始める。" },
-    { t: 3, q: "How many pens ___ you have?", opts: ["do", "are", "can", "is"], a: 0, exp: "How many のあとは一般動詞の疑問文の形（do you have）。" },
-    { t: 3, q: "My mother can ___ well.", opts: ["sing", "sings", "singing", "is sing"], a: 0, exp: "can + 原形。主語が3人称でも sing のまま。" }
+  // 聞き取りあいさつ・表現
+  var PHRASES = [
+    ["Hello.", "こんにちは"], ["Good morning.", "おはよう"], ["Good night.", "おやすみ"],
+    ["Goodbye.", "さようなら"], ["See you.", "またね"], ["Thank you.", "ありがとう"],
+    ["You're welcome.", "どういたしまして"], ["I'm sorry.", "ごめんなさい"],
+    ["How are you?", "元気？"], ["I'm fine.", "元気だよ"], ["I'm hungry.", "おなかがすいた"],
+    ["I'm happy.", "うれしい"], ["I'm sleepy.", "ねむい"],
+    ["What's your name?", "名前は何？"], ["My name is Ken.", "ぼくの名前はケンです"],
+    ["How many?", "いくつ？"], ["What do you like?", "何が好き？"],
+    ["I like apples.", "りんごが好き"], ["I don't like snakes.", "へびは好きじゃない"],
+    ["Do you like dogs?", "犬は好き？"], ["Yes, I do.", "うん、好きだよ"],
+    ["No, I don't.", "ううん、好きじゃない"], ["This is for you.", "これをどうぞ"],
+    ["Let's play soccer.", "サッカーをしよう"]
   ];
 
-  var GRAMMAR2 = [ // 三単現・現在進行形・過去形（中1後半の範囲）
-    { t: 1, q: "She ___ tennis every day.", opts: ["plays", "play", "playing", "played"], a: 0, exp: "主語が3人称単数で現在の文は動詞に s（三単現）。" },
-    { t: 1, q: "My father ___ in Osaka.", opts: ["works", "work", "working", "is work"], a: 0, exp: "主語 My father は3人称単数 → works。" },
-    { t: 1, q: "Ken ___ a dog.", opts: ["has", "have", "haves", "having"], a: 0, exp: "have の三単現は has（特別な形）。" },
-    { t: 1, q: "___ she like music? — Yes, she does.", opts: ["Does", "Do", "Is", "Can"], a: 0, exp: "三単現の疑問文は Does で始める。動詞は原形に戻る。" },
-    { t: 2, q: "I am ___ TV now.", opts: ["watching", "watch", "watched", "watches"], a: 0, exp: "「今〜している」は現在進行形 be動詞 + 〜ing。" },
-    { t: 2, q: "She is ___ lunch now.", opts: ["making", "make", "makes", "made"], a: 0, exp: "make → making（e をとって ing）。" },
-    { t: 2, q: "They are ___ in the park.", opts: ["running", "run", "runing", "runs"], a: 0, exp: "run → running（n を重ねて ing）。" },
-    { t: 2, q: "___ you studying now?", opts: ["Are", "Do", "Does", "Did"], a: 0, exp: "進行形の疑問文は be動詞で始める。" },
-    { t: 3, q: "I ___ soccer yesterday.", opts: ["played", "play", "plays", "playing"], a: 0, exp: "yesterday があるので過去形 played。" },
-    { t: 3, q: "She ___ to school yesterday.", opts: ["went", "goes", "go", "going"], a: 0, exp: "go の過去形は went（不規則動詞）。" },
-    { t: 3, q: "I ___ a movie last night.", opts: ["watched", "watch", "watching", "watches"], a: 0, exp: "last night → 過去形 watched。" },
-    { t: 3, q: "___ you play tennis yesterday?", opts: ["Did", "Do", "Does", "Are"], a: 0, exp: "過去の疑問文は Did + 主語 + 動詞の原形。" }
-  ];
-
-  var SORT = [
-    { t: 1, jp: "わたしは生徒です。", tokens: ["I", "am", "a", "student."], exp: "主語 + be動詞 + 名詞 の順。" },
-    { t: 1, jp: "あなたは親切です。", tokens: ["You", "are", "kind."], exp: "主語 You + are + 形容詞。" },
-    { t: 1, jp: "これはわたしのかばんです。", tokens: ["This", "is", "my", "bag."], exp: "This is + 持ち主 + もの。" },
-    { t: 1, jp: "わたしは京都出身です。", tokens: ["I", "am", "from", "Kyoto."], exp: "出身は be動詞 + from + 地名。" },
-    { t: 1, jp: "ケンはわたしの友だちです。", tokens: ["Ken", "is", "my", "friend."], exp: "主語 Ken（3人称単数）+ is。" },
-    { t: 2, jp: "わたしはバレーボールが好きです。", tokens: ["I", "like", "volleyball."], exp: "主語 + 一般動詞 + 目的語。" },
-    { t: 2, jp: "わたしは毎日英語を勉強します。", tokens: ["I", "study", "English", "every", "day."], exp: "「毎日」every day は文の最後。" },
-    { t: 2, jp: "あなたはサッカーをしますか。", tokens: ["Do", "you", "play", "soccer?"], exp: "一般動詞の疑問文は Do + 主語 + 動詞。" },
-    { t: 2, jp: "わたしは牛乳を飲みません。", tokens: ["I", "don't", "drink", "milk."], exp: "否定は don't を動詞の前に。" },
-    { t: 2, jp: "あなたは音楽が好きですか。", tokens: ["Do", "you", "like", "music?"], exp: "Do で始めて主語 + 動詞の順。" },
-    { t: 3, jp: "わたしは速く走ることができます。", tokens: ["I", "can", "run", "fast."], exp: "can + 動詞の原形 + 副詞。" },
-    { t: 3, jp: "あなたはピアノをひけますか。", tokens: ["Can", "you", "play", "the", "piano?"], exp: "can の疑問文は Can + 主語 + 動詞。" },
-    { t: 3, jp: "わたしの姉は上手に歌えます。", tokens: ["My", "sister", "can", "sing", "well."], exp: "主語が My sister でも can + 原形。" },
-    { t: 3, jp: "ここで写真をとってはいけません。", tokens: ["Don't", "take", "pictures", "here."], exp: "「〜してはいけない」は Don't + 動詞の原形。" },
-    { t: 3, jp: "わたしは英語を上手に話せません。", tokens: ["I", "can't", "speak", "English", "well."], exp: "can't + 原形。well は最後。" },
-    { t: 2, jp: "彼は毎日サッカーをします。", tokens: ["He", "plays", "soccer", "every", "day."], exp: "三単現 plays。every day は文末。" },
-    { t: 2, jp: "わたしは今、本を読んでいます。", tokens: ["I", "am", "reading", "a", "book", "now."], exp: "現在進行形 am + 〜ing。" },
-    { t: 3, jp: "彼女は昨日、学校に行きました。", tokens: ["She", "went", "to", "school", "yesterday."], exp: "過去形 went。yesterday は文末。" },
-    { t: 3, jp: "あなたは今、テレビを見ていますか。", tokens: ["Are", "you", "watching", "TV", "now?"], exp: "進行形の疑問文は be動詞が先頭。" }
-  ];
+  // アルファベット（大文字↔小文字・順番）: 26文字からバンクを自動生成
+  var UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  // まぎらわしい文字の組（誤答選択肢に優先で混ぜる）
+  var CONFUSE = { b: ["d", "p", "h"], d: ["b", "q", "p"], p: ["q", "b", "d"], q: ["p", "d", "b"],
+    m: ["n", "w", "u"], n: ["m", "u", "h"], u: ["n", "v", "w"], v: ["w", "u", "y"],
+    i: ["l", "j", "t"], l: ["i", "t", "j"], g: ["q", "y", "j"], f: ["t", "l", "k"] };
+  function others(pool, exclude, want) {
+    var out = [], i = 0;
+    var shuffled = pool.slice().sort(function () { return Math.random() - 0.5; });
+    while (out.length < want && i < shuffled.length) {
+      if (exclude.indexOf(shuffled[i]) === -1 && out.indexOf(shuffled[i]) === -1) out.push(shuffled[i]);
+      i++;
+    }
+    return out;
+  }
+  var LOWERS = UPPER.map(function (u) { return u.toLowerCase(); });
+  var ALPHABET = [];
+  UPPER.forEach(function (up, idx) {
+    var low = up.toLowerCase();
+    var conf = (CONFUSE[low] || []).slice(0, 2);
+    // t1: 大文字→小文字（まぎらわしい文字を優先で混ぜる）
+    var wrong1 = conf.concat(others(LOWERS, [low].concat(conf), 3 - conf.length));
+    ALPHABET.push({ t: 1, q: "大文字「" + up + "」の小文字はどれ？",
+      opts: [low].concat(wrong1.slice(0, 3)), a: 0, exp: up + " の小文字は " + low + "。" });
+    // t2: 小文字→大文字
+    ALPHABET.push({ t: 2, q: "小文字「" + low + "」の大文字はどれ？",
+      opts: [up].concat(others(UPPER, [up], 3)), a: 0, exp: low + " の大文字は " + up + "。" });
+    // t3: 順番（次の文字）
+    if (idx < 25) {
+      ALPHABET.push({ t: 3, q: "「" + up + "」の次の文字はどれ？",
+        opts: [UPPER[idx + 1]].concat(others(UPPER, [UPPER[idx + 1]], 3)), a: 0,
+        exp: "ABCの歌の順番: … " + up + " → " + UPPER[idx + 1] + " …" });
+    }
+  });
 
   global.PROFILE = {
-    id: "chu1",
-    theme: "dance",
-    appTitle: "ダンスステージ — 中1 数学・英語",
-    storageKey: "manabi-chu1-v1",
+    id: "sho4",
+    theme: "arena",
+    appTitle: "バトルアリーナ — 小4 算数・英語",
+    storageKey: "manabi-sho4-v1",
     texts: {
-      greet: "おかえり、ダンサー！",
-      streakWord: "日連続レッスン",
-      comboWord: "ラリー",
-      crown: "🎉",
-      victory: "ステージ大成功！",
-      vsub: "観客が沸いている！",
-      mapsub: "ゲージを全部埋めればテストは怖くない",
-      titles: ["入門生", "スタジオ生", "バックダンサー", "センター", "世界のダンサー"],
-      grade: "中1"
+      greet: "おかえり、チャレンジャー！",
+      streakWord: "日連続バトル",
+      comboWord: "連続KO",
+      crown: "🏆",
+      victory: "VICTORY!",
+      vsub: "今日のバトルを制した！",
+      mapsub: "ゲージを埋めて チャンピオンロードを進め",
+      titles: ["ルーキー", "ファイター", "エリート", "マスター", "チャンピオン"],
+      grade: "小4"
     },
     skills: [
-      { id: "bunsu", name: "分数の四則（算数の土台）", band: "数学", subject: "math", gen: "bunsu",
-        terms: [["分子", "分数の上の数"], ["分母", "分数の下の数"], ["通分", "分母をそろえること"]] },
-      { id: "yakubun", name: "約分（算数の土台）", band: "数学", subject: "math", gen: "yakubun",
-        terms: [["約分", "分子と分母を同じ数でわって、かんたんな分数にすること"], ["最大公約数", "分子と分母のどちらも割り切れる、いちばん大きい数"]] },
-      { id: "shosu", name: "小数の計算（算数の土台）", band: "数学", subject: "math", gen: "shosu",
-        terms: [["小数点", "整数と小数を区切る点。位置をそろえて計算する"]] },
-      { id: "seifu_kagen", name: "正負の数 たし算ひき算", band: "数学", subject: "math", gen: "seifu_kagen",
-        terms: [["符号", "＋（プラス）と −（マイナス）の記号"], ["絶対値", "符号を取りのぞいた、数の大きさ"]] },
-      { id: "seifu_jojo", name: "正負の数 かけ算わり算", band: "数学", subject: "math", gen: "seifu_jojo",
-        terms: [["同符号", "符号が同じ2つの数（答えは＋）"], ["異符号", "符号がちがう2つの数（答えは−）"]] },
-      { id: "shisoku", name: "四則の混じった計算", band: "数学", subject: "math", gen: "shisoku",
-        terms: [["四則", "たし算・ひき算・かけ算・わり算の4つ"], ["計算の順序", "かっこ → 累乗 → ×÷ → ＋− の順"]] },
-      { id: "ruijo", name: "累乗", band: "数学", subject: "math", gen: "ruijo",
-        terms: [["累乗", "同じ数を何回もかけたもの（例: 3² = 3×3）"], ["指数", "右上の小さい数。かける回数を表す"]] },
-      { id: "moji_arawashi", name: "文字式の表し方", band: "数学", subject: "math", gen: "moji_arawashi",
-        terms: [["文字式", "x や a などの文字を使った式"], ["積", "かけ算の答え"], ["商", "わり算の答え"]] },
-      { id: "moji_keisan", name: "文字式の計算", band: "数学", subject: "math", gen: "moji_keisan",
-        terms: [["項", "式を＋で区切ったひとつひとつ（例: 3x＋5 の項は 3x と 5）"], ["係数", "文字の前についている数字（3x なら 3）"]] },
-      { id: "bunpai", name: "分配法則", band: "数学", subject: "math", gen: "bunpai",
-        terms: [["分配法則", "かっこの外の数を、中のすべての項にかけるきまり"]] },
-      { id: "ichiji_hoteishiki", stdMonth: "2026-10", preview: true, name: "一次方程式", band: "数学", subject: "math", gen: "ichiji_hoteishiki",
-        terms: [["方程式", "まだ分からない数 x をふくむ等式"], ["移項", "項を符号を変えて反対側の辺に移すこと"], ["解", "方程式を成り立たせる x の値"]] },
-      { id: "hirei", stdMonth: "2026-12", preview: true, name: "比例・反比例", band: "数学", subject: "math", gen: "hirei",
-        terms: [["比例", "x が2倍3倍になると y も2倍3倍になる関係（y = ax）"], ["反比例", "x が2倍3倍になると y が半分・3分の1になる関係（y = a/x）"], ["比例定数", "y = ax や y = a/x の a のこと"]] },
-      { id: "zukei_en", stdMonth: "2027-02", preview: true, name: "円とおうぎ形", band: "数学", subject: "math", gen: "zukei_en",
-        terms: [["π（パイ・円周率）", "円周 ÷ 直径 の値。約3.14。答えではπのまま残す"], ["弧", "円周の一部分"], ["おうぎ形", "円を2本の半径で切り取った形"], ["中心角", "おうぎ形の、中心のところの角度"]] },
-      { id: "data_katsuyo", stdMonth: "2027-03", preview: true, name: "データの活用", band: "数学", subject: "math", gen: "data_katsuyo",
-        terms: [["平均値", "合計 ÷ 個数"], ["中央値", "小さい順に並べたときの真ん中の値"], ["範囲", "最大値 − 最小値"]] },
-      { id: "tango", name: "英単語", band: "英語", subject: "eng", vocab: VOCAB,
-        lesson: ["単語は「見て意味が分かる」→「日本語から英語が出る」の2段階で覚える",
-          "1日少しずつでも、毎日ふれるのがいちばん効く",
-          "まちがえた単語は数日後にまた出てくるので、そのとき思い出せればOK"] },
-      { id: "bunpo", name: "文法：be動詞・一般動詞・can", band: "英語", subject: "eng", bank: GRAMMAR,
-        lesson: ["英語の文には「be動詞の文」と「一般動詞の文」の2種類がある",
-          "be動詞（am/is/are）= 「〜です・〜にいる」。主語によって使い分ける",
-          "一般動詞（like/play など）= 動きや状態。否定は don't、疑問は Do で始める",
-          "can は「〜できる」。あとの動詞はいつも原形"] },
-      { id: "bunpo_sanjo", stdMonth: "2026-11", name: "文法：三単現・進行形・過去形", band: "英語", preview: true, subject: "eng", bank: GRAMMAR2,
-        lesson: ["主語が he/she など3人称単数で現在の文は、動詞に s（三単現）",
-          "「今〜している」は現在進行形 be動詞 + 〜ing",
-          "「昨日〜した」は過去形。played のような規則形と went のような不規則形がある",
-          "疑問文: 三単現は Does、進行形は be動詞、過去は Did で始める"] },
-      { id: "narabekae", name: "英文の並べ替え", band: "英語", subject: "eng", sort: SORT,
-        lesson: ["英語は「だれが → どうする → なにを」の順にならべる",
-          "疑問文は Do や be動詞、Can が文の先頭に出る",
-          "時間や場所のことば（every day, here など）はふつう文の最後"] }
+      { id: "kuku", name: "かけ算（九九〜2けた）", band: "算数", subject: "math", gen: "kuku",
+        terms: [["かけられる数", "かけ算の前の数（3×7 なら 3）"], ["かける数", "かけ算の後ろの数（3×7 なら 7）"]] },
+      { id: "warizan", name: "わり算（あまり・筆算）", band: "算数", subject: "math", gen: "warizan",
+        terms: [["わられる数", "わり算の前の数（21÷3 なら 21）"], ["わる数", "わり算の後ろの数（21÷3 なら 3）"], ["あまり", "わり切れずに残った数。わる数より必ず小さい"]] },
+      { id: "ookii_kazu", name: "大きい数（万・億）", band: "算数", subject: "math", gen: "ookii_kazu",
+        terms: [["位（くらい）", "数字の場所ごとの大きさ。一・十・百・千・万…"], ["10倍", "0を1こ右につけること"]] },
+      { id: "tokei", name: "時こくと時間", band: "算数", subject: "math", gen: "tokei",
+        terms: [["時こく", "「3時10分」のような時計の目もり"], ["時間", "時こくと時こくの間の長さ"], ["1分", "60秒のこと。1時間は60分"]] },
+      { id: "tanni", name: "長さ・重さ・かさの単位", band: "算数", subject: "math", gen: "tanni",
+        terms: [["km（キロメートル）", "1 km = 1000 m"], ["kg（キログラム）", "1 kg = 1000 g"], ["L（リットル）", "1 L = 10 dL = 1000 mL"]] },
+      { id: "shosu_kiso", name: "小数", band: "算数", subject: "math", gen: "shosu_kiso",
+        terms: [["小数点", "整数と小数を区切る点"], ["0.1", "1 を10等分した1つ分。10こ集めると 1"]] },
+      { id: "bunsu_kiso", name: "分数", band: "算数", subject: "math", gen: "bunsu_kiso",
+        terms: [["分母", "分数の下の数。何等分したか"], ["分子", "分数の上の数。何こ分か"], ["帯分数", "1と2/5 のように整数と分数を合わせた形"]] },
+      { id: "gaisu", name: "がい数（四捨五入）", band: "算数", subject: "math", gen: "gaisu", preview: true, stdMonth: "2026-09",
+        terms: [["がい数", "「およその数」のこと"], ["四捨五入", "0〜4は切り捨て、5〜9は切り上げるやり方"]] },
+      { id: "keisan_junjo", name: "計算のきまり（順序）", band: "算数", subject: "math", gen: "keisan_junjo", preview: true, stdMonth: "2026-10",
+        terms: [["計算の順序", "かっこ → かけ算・わり算 → たし算・ひき算 の順"]] },
+      { id: "menseki", name: "面積", band: "算数", subject: "math", gen: "menseki", preview: true, stdMonth: "2026-12",
+        terms: [["面積", "広さのこと。たて×よこ で求める"], ["cm²（平方センチメートル）", "1辺1cmの正方形いくつ分かを表す単位"], ["まわりの長さ", "図形のふちを1周した長さ。面積とはちがう"]] },
+      { id: "alphabet", name: "アルファベット", band: "英語", subject: "eng", bank: ALPHABET,
+        lesson: ["大文字と小文字はセットで覚える（A と a）",
+          "にている文字に注意: b と d、p と q、m と n",
+          "ABCの歌の順番で言えると、辞書も引けるようになる"] },
+      { id: "kikitori_tango", name: "きいてわかる英単語", band: "英語", subject: "eng", listen: WORDS, kind: "word",
+        lesson: ["英語は「音」から覚えるのがいちばん近道",
+          "🔊は何回押してもOK。聞き取れるまで聞こう",
+          "まちがえた単語はまた出てくるから、そのとき思い出せれば大丈夫"] },
+      { id: "kikitori_hyogen", name: "きいてわかる あいさつ・表現", band: "英語", subject: "eng", listen: PHRASES, kind: "phrase",
+        lesson: ["あいさつは決まり文句。丸ごと覚えてOK",
+          "Do you like 〜?（〜は好き？）には Yes, I do. / No, I don't. で答える",
+          "🔊を聞いてまねして言ってみると、もっと覚えられる"] }
     ]
   };
 })(typeof window !== "undefined" ? window : globalThis);

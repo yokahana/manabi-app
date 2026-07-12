@@ -56,6 +56,23 @@ body { margin: 0; }
   max-width: 480px; margin: 0 auto; min-height: 100dvh;
   display: flex; flex-direction: column;
 }
+.app-root[data-app-theme="arena"] {
+  --ap-bg: linear-gradient(170deg, #1c1140 0%, #2a1a5e 55%, #1a0f38 100%);
+  --ap-surface: #2e2158;
+  --ap-ink: #f2edff;
+  --ap-sub: #a394cf;
+  --ap-line: #453473;
+  --ap-accent: #ffb400;
+  --ap-accent-ink: #2b1c00;
+  --ap-second: #8e6cff;
+  --ap-glow: #ff5a5a;
+  --ap-good: #3ddc84;
+  --ap-good-bg: #16371f;
+  --ap-miss: #ff8a50;
+  --ap-miss-bg: #3a2312;
+  --ap-gauge: linear-gradient(90deg, #ffb400, #8e6cff);
+}
+
 .screen { flex: 1; display: none; flex-direction: column; padding: 22px 20px 8px; }
 .screen.on { display: flex; }
 
@@ -102,6 +119,25 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 .bar > i { display: block; height: 100%; border-radius: 999px; background: var(--ap-gauge); }
 .mission-note { font-size: 12.5px; color: var(--ap-sub); text-align: center; margin-top: 8px; }
 .today-line { font-size: 13px; color: var(--ap-sub); text-align: center; margin: 4px 0 0; }
+
+/* --- 週間ミッション・模擬テストカード（ホーム） --- */
+.week-card {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 16px; padding: 14px 16px; margin-top: 14px;
+}
+.week-card h3 { margin: 0 0 8px; font-size: 14px; }
+.week-row { margin-bottom: 10px; }
+.week-row:last-child { margin-bottom: 0; }
+.week-row-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+.week-row.done .week-row-top { color: var(--ap-good); }
+.week-check { font-size: 13px; }
+.week-row .bar { height: 8px; margin-top: 0; }
+.mock-card {
+  display: none; text-align: center; background: var(--ap-surface); border: 2px solid var(--ap-second);
+  border-radius: 16px; padding: 12px 16px; margin-top: 12px;
+}
+.mock-card.on { display: block; }
+.mock-countdown { margin: 0 0 6px; font-size: 13.5px; font-weight: 800; color: var(--ap-second); }
 
 /* --- クイズ --- */
 .quiz-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -199,6 +235,20 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 .stat .n { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .stat .l { font-size: 11.5px; color: var(--ap-sub); }
 
+.hide { display: none !important; }
+.best-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0 0; }
+.best-badge {
+  font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px;
+  background: var(--ap-glow); color: #3a2a00;
+}
+.mock-block { text-align: center; }
+.mock-score-card {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 18px; padding: 20px; margin-bottom: 12px;
+}
+.mock-score { font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.mock-diff { margin: 6px 0 0; font-size: 13px; color: var(--ap-sub); }
+
 .confetti { position: absolute; inset: -20px 0 auto 0; height: 0; pointer-events: none; }
 .confetti i {
   position: absolute; top: 0; width: 8px; height: 12px; border-radius: 2px;
@@ -235,6 +285,10 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 .preview-badge {
   font-size: 10.5px; font-weight: 800; border-radius: 5px; padding: 1px 6px;
   background: var(--ap-glow); color: #3a2a00; margin-left: 6px; vertical-align: 1px;
+}
+.review-badge {
+  font-size: 10.5px; font-weight: 800; border-radius: 5px; padding: 1px 6px;
+  background: var(--ap-second); color: #fff; margin-left: 6px; vertical-align: 1px;
 }
 .range-row { display: block; font-size: 12.5px; margin: 4px 0; cursor: pointer; }
 .range-row input { width: 16px; height: 16px; vertical-align: -2px; }
@@ -288,6 +342,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 }
 .app-root[data-app-theme="battle"] .toast { background: #ecf1fb; color: #0e1420; }
 .app-root[data-app-theme="dance"] .toast { background: #43263c; color: #fff; }
+.app-root[data-app-theme="arena"] .toast { background: #f4efff; color: #1c1140; }
 .toast.on { opacity: 1; }
 
 </style>
@@ -319,6 +374,14 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
         <button class="big-btn" id="al-yes">習った</button>
         <button class="big-btn ghost" id="al-no">まだ</button>
       </div>
+    </div>
+    <div class="week-card">
+      <h3>今週のミッション</h3>
+      <div id="week-missions"></div>
+    </div>
+    <div class="mock-card" id="mock-card">
+      <p class="mock-countdown" id="mock-countdown"></p>
+      <button class="big-btn ghost" id="mock-start-btn" data-act="mock-start">📝 模擬テストを始める</button>
     </div>
     <button class="big-btn ghost" data-act="map">スキルマップを見る</button>
     <button class="text-link" data-act="parent">保護者の方へ</button>
@@ -354,23 +417,33 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       <h2 data-txt="victory"></h2>
       <p class="sub" data-txt="vsub"></p>
     </div>
-    <div class="result-stats">
-      <div class="stat"><div class="n" data-txt="rGood"></div><div class="l">正解数</div></div>
-      <div class="stat"><div class="n" data-txt="rCombo"></div><div class="l">最大コンボ</div></div>
-      <div class="stat"><div class="n" data-txt="rXp"></div><div class="l">獲得XP</div></div>
-    </div>
-    <div class="level-card">
-      <div class="title-line">
-        <span class="rank" data-txt="rank2"></span>
-        <span class="lv" data-txt="lv2"></span>
+    <div id="normal-result">
+      <div class="result-stats">
+        <div class="stat"><div class="n" data-txt="rGood"></div><div class="l">正解数</div></div>
+        <div class="stat"><div class="n" data-txt="rCombo"></div><div class="l">最大コンボ</div></div>
+        <div class="stat"><div class="n" data-txt="rXp"></div><div class="l">獲得XP</div></div>
       </div>
-      <div class="bar"><i id="xp-bar" style="width:0%"></i></div>
+      <div class="best-badges" id="best-badges"></div>
+      <div class="level-card">
+        <div class="title-line">
+          <span class="rank" data-txt="rank2"></span>
+          <span class="lv" data-txt="lv2"></span>
+        </div>
+        <div class="bar"><i id="xp-bar" style="width:0%"></i></div>
+      </div>
+      <button class="big-btn" data-act="again">もう1セットやる</button>
+      <button class="big-btn ghost" data-act="report">📤 今日の成績レポートを見る・送る</button>
+      <div class="detail" id="report-prev" style="margin-bottom:8px">
+        <pre id="report-text" style="margin:0;font-family:inherit;font-size:13px;white-space:pre-wrap"></pre>
+        <button class="big-btn ghost" data-act="report-send" style="padding:11px;font-size:14px">共有・コピーする</button>
+      </div>
     </div>
-    <button class="big-btn" data-act="again">もう1セットやる</button>
-    <button class="big-btn ghost" data-act="report">📤 今日の成績レポートを見る・送る</button>
-    <div class="detail" id="report-prev" style="margin-bottom:8px">
-      <pre id="report-text" style="margin:0;font-family:inherit;font-size:13px;white-space:pre-wrap"></pre>
-      <button class="big-btn ghost" data-act="report-send" style="padding:11px;font-size:14px">共有・コピーする</button>
+    <div class="mock-block" id="mock-block">
+      <div class="mock-score-card">
+        <div class="mock-score" id="mock-score"></div>
+        <p class="mock-diff" id="mock-diff"></p>
+      </div>
+      <div class="parent-card" id="mock-history"></div>
     </div>
     <button class="big-btn ghost" data-act="home">今日はここまで</button>
   </section>
@@ -394,12 +467,21 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     <div class="parent-card">
       <h3>全体のようす</h3>
       <p id="parent-sum" style="margin:0;font-size:13px"></p>
+      <p id="parent-best" style="margin:6px 0 0;font-size:12.5px"></p>
       <h3 style="margin-top:10px">いま弱いところ（習熟が低い順）</h3>
       <ul id="parent-weak" style="margin:0;padding-left:18px;font-size:13px"></ul>
     </div>
     <div class="parent-card">
       <h3>成績レポートを送る</h3>
       <button class="big-btn" data-act="report-send" style="margin-top:4px;padding:12px;font-size:15px">📤 今日のレポートを共有</button>
+    </div>
+    <div class="parent-card">
+      <h3>模擬テストの設定</h3>
+      <p style="margin:0 0 6px;font-size:12px" class="sub">テスト日と出題範囲を設定すると、ホームにカウントダウンが出て、いつでも模擬テストに挑戦できます</p>
+      <label style="display:block;font-size:13px;margin-bottom:8px">テスト日　<input type="date" id="mock-date"></label>
+      <div id="mock-range-body"></div>
+      <button class="big-btn ghost" data-act="mock-save" style="padding:11px;font-size:14px;margin-top:8px">この内容で保存</button>
+      <div id="mock-history-list" style="margin-top:10px"></div>
     </div>
     <div class="parent-card">
       <h3>学習範囲の設定（学校で習ったところ）</h3>
@@ -1232,6 +1314,270 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
         "答えは およそ " + ans + " 個"] });
   };
 
+  /* ===== 小学生（小3・小4） ===== */
+  G.kuku = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 9), b = ri(2, 9);
+      return Q({ type: "numeric", text: a + " × " + b + " を計算しよう", ans: String(a * b),
+        exp: "九九の「" + a + "のだん」。",
+        detail: [a + "のだんを思い出そう", a + "×" + b + " は " + a + " を " + b + "回たした数と同じ", "答えは " + (a * b)] });
+    }
+    if (tier === 2) {
+      var a2 = ri(2, 9), b2 = ri(2, 9);
+      return Q({ type: "numeric", text: a2 + " × □ = " + (a2 * b2) + "。□に入る数は？", ans: String(b2),
+        exp: "□ = " + (a2 * b2) + " ÷ " + a2 + " で求められる。",
+        detail: [a2 + "のだんで " + (a2 * b2) + " になるところを探す",
+          "わり算でも出せる: " + (a2 * b2) + "÷" + a2 + "=" + b2, "答えは " + b2] });
+    }
+    var a3 = ri(12, 49), b3 = ri(2, 9);
+    var tens = Math.floor(a3 / 10) * 10, ones = a3 % 10;
+    return Q({ type: "numeric", text: a3 + " × " + b3 + " を計算しよう", ans: String(a3 * b3),
+      exp: "位ごとに分けて計算する。",
+      detail: [a3 + " を " + tens + " と " + ones + " に分ける",
+        tens + "×" + b3 + "=" + tens * b3 + "、" + ones + "×" + b3 + "=" + ones * b3,
+        "たすと " + tens * b3 + "+" + ones * b3 + "=" + a3 * b3] });
+  };
+
+  G.warizan = function (tier) {
+    if (tier === 1) {
+      var d = ri(2, 9), q = ri(2, 9);
+      return Q({ type: "numeric", text: (d * q) + " ÷ " + d + " を計算しよう", ans: String(q),
+        exp: "「" + d + " に何をかけると " + (d * q) + " になるか」を九九で探す。",
+        detail: [d + " × □ = " + (d * q) + " の □ を探す",
+          d + "のだん: " + d + "×" + q + "=" + (d * q), "答えは " + q] });
+    }
+    if (tier === 2) {
+      var d2 = ri(3, 9), q2 = ri(2, 8), r2 = ri(1, d2 - 1);
+      var n2 = d2 * q2 + r2;
+      var correct = q2 + " あまり " + r2;
+      var o = choiceOpts(correct, [(q2 + 1) + " あまり " + r2, q2 + " あまり " + (r2 === 1 ? r2 + 1 : r2 - 1), (q2 - 1) + " あまり " + (r2 + d2)]);
+      return Q({ type: "choice", text: n2 + " ÷ " + d2 + " の答えは？", opts: o.opts, ans: o.ans,
+        exp: "あまりは、わる数より小さくなる。",
+        detail: [d2 + "×" + q2 + "=" + d2 * q2 + " ← " + n2 + " をこえない一番大きいところ",
+          "あまり = " + n2 + "−" + d2 * q2 + " = " + r2,
+          "たしかめ: " + d2 + "×" + q2 + "+" + r2 + "=" + n2 + "。あまり" + r2 + "はわる数" + d2 + "より小さいのでOK"] });
+    }
+    var d3 = ri(3, 7), q3 = ri(11, Math.floor(98 / d3));
+    return Q({ type: "numeric", text: (d3 * q3) + " ÷ " + d3 + " を計算しよう", ans: String(q3),
+      exp: "筆算で、大きい位から順にわる。",
+      detail: ["十の位からわる: " + Math.floor(d3 * q3 / 10) + " の中に " + d3 + " は " + Math.floor(q3 / 10) + "回",
+        "残りをおろして一の位もわる",
+        "答えは " + q3 + "（たしかめ: " + d3 + "×" + q3 + "=" + d3 * q3 + "）"] });
+  };
+
+  G.ookii_kazu = function (tier) {
+    if (tier === 1) {
+      var m = ri(1, 9), s = ri(1, 9), h = ri(1, 9);
+      var ansN = m * 10000 + s * 1000 + h * 100;
+      return Q({ type: "numeric", text: "10000を" + m + "こ、1000を" + s + "こ、100を" + h + "こ合わせた数は？", ans: String(ansN),
+        exp: "位ごとに数字を置いていく。",
+        detail: ["一万の位が " + m + "、千の位が " + s + "、百の位が " + h,
+          "十の位と一の位は 0", "答えは " + ansN] });
+    }
+    if (tier === 2) {
+      var n2 = ri(12, 98) * 10, k = pick([10, 100]);
+      return Q({ type: "numeric", text: n2 + " を" + k + "倍した数は？", ans: String(n2 * k),
+        exp: k + "倍すると、0 が" + (k === 10 ? "1つ" : "2つ") + "増える。",
+        detail: [k + "倍 = 0 を" + (k === 10 ? "1こ" : "2こ") + "右につける",
+          n2 + " → " + n2 * k, "位が" + (k === 10 ? "1つ" : "2つ") + "上がったのと同じ"] });
+    }
+    var p = pick([["1億", "1万", "10000"], ["1億", "100万", "100"], ["1兆", "1億", "10000"]]);
+    return Q({ type: "numeric", text: p[0] + " は " + p[1] + " の何倍？", ans: p[2],
+      exp: "0 の数のちがいで考える。",
+      detail: [p[0] + " と " + p[1] + " の 0 の数をくらべる",
+        "0 が " + String(p[2]).length + "こ分ちがう… " + p[2] + "倍",
+        "答えは " + p[2] + "倍"] });
+  };
+
+  G.gaisu = function (tier) {
+    if (tier === 1) {
+      var n = ri(32, 96) * 10 + ri(1, 9);
+      var ansR = Math.round(n / 10) * 10;
+      return Q({ type: "numeric", text: n + " を四捨五入して、十の位までのがい数にしよう", ans: String(ansR),
+        exp: "一の位を見て、0〜4なら切り捨て、5〜9なら切り上げ。",
+        detail: ["一の位は " + (n % 10),
+          (n % 10) >= 5 ? "5以上なので切り上げ" : "4以下なので切り捨て",
+          "答えは " + ansR] });
+    }
+    if (tier === 2) {
+      var n2 = ri(12, 98) * 100 + ri(1, 99);
+      var ans2 = Math.round(n2 / 100) * 100;
+      return Q({ type: "numeric", text: n2 + " を四捨五入して、百の位までのがい数にしよう", ans: String(ans2),
+        exp: "百の位までのがい数は、十の位を見て四捨五入。",
+        detail: ["十の位は " + (Math.floor(n2 / 10) % 10),
+          (Math.floor(n2 / 10) % 10) >= 5 ? "5以上なので切り上げ" : "4以下なので切り捨て",
+          "答えは " + ans2] });
+    }
+    var d3 = ri(2, 9), n3 = d3 * 1000 + ri(1, 999);
+    var top = Math.round(n3 / 1000) * 1000;
+    return Q({ type: "numeric", text: n3 + " を四捨五入して、上から1けたのがい数にしよう", ans: String(top),
+      exp: "上から2けた目を見て四捨五入する。",
+      detail: ["一番上の位は千の位（" + d3 + "）",
+        "その次の位（百の位）は " + (Math.floor(n3 / 100) % 10) + " → " + ((Math.floor(n3 / 100) % 10) >= 5 ? "切り上げ" : "切り捨て"),
+        "答えは " + top] });
+  };
+
+  G.shosu_kiso = function (tier) {
+    if (tier === 1) {
+      if (Math.random() < 0.5) {
+        var k = ri(2, 9);
+        return Q({ type: "numeric", dec: true, text: "0.1 を " + k + "こ集めた数は？", ans: numStr(k / 10),
+          exp: "0.1 が10こで 1 になる。",
+          detail: ["0.1 が " + k + "こ → 0." + k, "答えは " + numStr(k / 10)] });
+      }
+      var n = ri(11, 39);
+      return Q({ type: "numeric", text: numStr(n / 10) + " は 0.1 を何こ集めた数？", ans: String(n),
+        exp: "小数点を1つ右に動かすと、0.1 が何こか分かる。",
+        detail: [numStr(n / 10) + " = 0.1 × " + n, "答えは " + n + "こ"] });
+    }
+    if (tier === 2) {
+      var a = ri(11, 89) / 10, b = ri(11, 89) / 10;
+      while (a === b) b = ri(11, 89) / 10;
+      var sub = Math.random() < 0.5;
+      if (sub && a < b) { var t = a; a = b; b = t; }
+      var ans2 = Math.round((sub ? a - b : a + b) * 10) / 10;
+      return Q({ type: "numeric", dec: true, text: numStr(a) + (sub ? " − " : " + ") + numStr(b) + " を計算しよう", ans: numStr(ans2),
+        exp: "小数点の位置をそろえて計算する。",
+        detail: ["小数点をたてにそろえる", "整数と同じように" + (sub ? "ひき算" : "たし算"), "答えは " + numStr(ans2)] });
+    }
+    var c = ri(12, 39) / 10, m = ri(2, 8);
+    return Q({ type: "numeric", dec: true, text: numStr(c) + " × " + m + " を計算しよう", ans: numStr(Math.round(c * m * 10) / 10),
+      exp: "小数点がないものとして計算し、あとで小数点を打つ。",
+      detail: ["小数点を無視: " + Math.round(c * 10) + "×" + m + "=" + Math.round(c * 10) * m,
+        numStr(c) + " は小数点以下1けた → 答えも1けた戻す",
+        "答えは " + numStr(Math.round(c * m * 10) / 10)] });
+  };
+
+  G.bunsu_kiso = function (tier) {
+    if (tier === 1) {
+      var d = ri(4, 9), n = ri(2, d - 1);
+      return Q({ type: "numeric", text: n + "/" + d + " は 1/" + d + " の何こ分？", ans: String(n),
+        exp: "分子が「1/" + d + " が何こあるか」を表す。",
+        detail: ["1/" + d + " は、1 を " + d + "等分した1つ分",
+          n + "/" + d + " はそれが " + n + "こ", "答えは " + n + "こ"] });
+    }
+    if (tier === 2) {
+      var d2 = ri(5, 9), a2 = ri(1, d2 - 2), b2 = ri(1, d2 - a2 - 1);
+      var o = choiceOpts(fr(a2 + b2, d2), [frRaw(a2 + b2, d2 * 2), fr(a2 + b2 + 1, d2), frRaw(a2 * b2 === a2 + b2 ? a2 * b2 + 1 : a2 * b2, d2)]);
+      return Q({ type: "choice", text: frRaw(a2, d2) + " + " + frRaw(b2, d2) + " を計算しよう", opts: o.opts, ans: o.ans,
+        exp: "分母が同じ分数は、分子だけをたす。",
+        detail: ["分母（下）はそのまま", "分子（上）をたす: " + a2 + "+" + b2 + "=" + (a2 + b2), "答えは " + fr(a2 + b2, d2)] });
+    }
+    var w = ri(1, 2), d3 = ri(3, 7), n3 = ri(1, d3 - 1);
+    var kabun = w * d3 + n3;
+    var o3 = choiceOpts(frRaw(kabun, d3), [frRaw(w + n3, d3), frRaw(kabun + 1, d3), frRaw(kabun - 1, d3)]);
+    return Q({ type: "choice", text: w + "と" + n3 + "/" + d3 + "（帯分数）を仮分数にしよう", opts: o3.opts, ans: o3.ans,
+      exp: "整数部分を分数に直してたす。",
+      detail: [w + " = " + frRaw(w * d3, d3),
+        frRaw(w * d3, d3) + " + " + frRaw(n3, d3) + " = " + frRaw(kabun, d3),
+        "近道: 分母×整数＋分子 = " + d3 + "×" + w + "+" + n3 + "=" + kabun] });
+  };
+
+  G.keisan_junjo = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 9), b = ri(2, 9), c = ri(2, 9);
+      return Q({ type: "numeric", text: a + " + " + b + " × " + c + " を計算しよう", ans: String(a + b * c),
+        exp: "かけ算を先に計算する。",
+        detail: ["先にかけ算: " + b + "×" + c + "=" + b * c,
+          "つぎにたし算: " + a + "+" + b * c + "=" + (a + b * c), "左から順にやると間違えるので注意"] });
+    }
+    if (tier === 2) {
+      var a2 = ri(2, 9), b2 = ri(2, 9), c2 = ri(2, 9);
+      return Q({ type: "numeric", text: "（" + a2 + " + " + b2 + "）× " + c2 + " を計算しよう", ans: String((a2 + b2) * c2),
+        exp: "かっこの中を先に計算する。",
+        detail: ["かっこの中: " + a2 + "+" + b2 + "=" + (a2 + b2),
+          "かけ算: " + (a2 + b2) + "×" + c2 + "=" + (a2 + b2) * c2, "かっこは何より先"] });
+    }
+    var a3 = ri(10, 20), c3 = ri(2, 4), k3 = ri(1, 3), d3 = ri(1, 5);
+    var b3 = c3 * k3;
+    return Q({ type: "numeric", text: a3 + " − " + b3 + " ÷ " + c3 + " + " + d3 + " を計算しよう", ans: String(a3 - k3 + d3),
+      exp: "わり算を先に。そのあと左から順に。",
+      detail: ["先にわり算: " + b3 + "÷" + c3 + "=" + k3,
+        "左から: " + a3 + "−" + k3 + "=" + (a3 - k3),
+        (a3 - k3) + "+" + d3 + "=" + (a3 - k3 + d3)] });
+  };
+
+  G.menseki = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 9), b = ri(2, 9);
+      while (a === b) b = ri(2, 9);
+      return Q({ type: "numeric", text: "たて " + a + " cm、よこ " + b + " cm の長方形の面積は？（cm²）", ans: String(a * b),
+        exp: "長方形の面積 = たて × よこ。",
+        detail: ["公式: 面積 = たて × よこ", a + "×" + b + "=" + a * b, "答えは " + a * b + " cm²"] });
+    }
+    if (tier === 2) {
+      var s = ri(3, 9);
+      if (Math.random() < 0.5) {
+        return Q({ type: "numeric", text: "1辺が " + s + " cm の正方形の面積は？（cm²）", ans: String(s * s),
+          exp: "正方形の面積 = 1辺 × 1辺。",
+          detail: ["公式: 1辺 × 1辺", s + "×" + s + "=" + s * s, "答えは " + s * s + " cm²"] });
+      }
+      var a2 = ri(3, 9), b2 = ri(3, 9);
+      return Q({ type: "numeric", text: "たて " + a2 + " cm、よこ " + b2 + " cm の長方形の、まわりの長さは？（cm）", ans: String(2 * (a2 + b2)),
+        exp: "まわりの長さ =（たて＋よこ）× 2。面積とまちがえない。",
+        detail: ["まわり =（" + a2 + "+" + b2 + "）×2",
+          "（" + (a2 + b2) + "）×2=" + 2 * (a2 + b2),
+          "面積（たて×よこ）とはちがう式なので注意"] });
+    }
+    var a3 = ri(2, 6) * 10, b3 = ri(11, 45);
+    return Q({ type: "numeric", text: "たて " + a3 + " cm、よこ " + b3 + " cm の長方形の面積は？（cm²）", ans: String(a3 * b3),
+      exp: "数が大きくても、面積 = たて × よこ。",
+      detail: ["公式は同じ: たて × よこ", a3 + "×" + b3 + "=" + a3 * b3, "答えは " + a3 * b3 + " cm²"] });
+  };
+
+  G.tanni = function (tier) {
+    if (tier === 1) {
+      var p = pick([["km", "m", 1000], ["m", "cm", 100], ["cm", "mm", 10]]);
+      var n = ri(2, 9);
+      return Q({ type: "numeric", text: n + " " + p[0] + " = □ " + p[1] + "。□に入る数は？", ans: String(n * p[2]),
+        exp: "1 " + p[0] + " = " + p[2] + " " + p[1] + "。",
+        detail: ["1 " + p[0] + " = " + p[2] + " " + p[1],
+          n + " " + p[0] + " は " + n + "×" + p[2] + "=" + n * p[2], "答えは " + n * p[2]] });
+    }
+    if (tier === 2) {
+      var p2 = pick([["kg", "g", 1000], ["L", "dL", 10], ["L", "mL", 1000]]);
+      var n2 = ri(2, 9);
+      return Q({ type: "numeric", text: n2 + " " + p2[0] + " = □ " + p2[1] + "。□に入る数は？", ans: String(n2 * p2[2]),
+        exp: "1 " + p2[0] + " = " + p2[2] + " " + p2[1] + "。",
+        detail: ["1 " + p2[0] + " = " + p2[2] + " " + p2[1],
+          n2 + "×" + p2[2] + "=" + n2 * p2[2], "答えは " + n2 * p2[2]] });
+    }
+    var kg = ri(1, 5), g = ri(1, 9) * 10;
+    return Q({ type: "numeric", text: kg + " kg " + g + " g = □ g。□に入る数は？", ans: String(kg * 1000 + g),
+      exp: "kg を g に直してからたす。",
+      detail: [kg + " kg = " + kg * 1000 + " g",
+        kg * 1000 + " + " + g + " = " + (kg * 1000 + g), "答えは " + (kg * 1000 + g)] });
+  };
+
+  G.tokei = function (tier) {
+    if (tier === 1) {
+      var h = ri(1, 10), m = pick([0, 10, 15, 20, 30, 40]), add = pick([15, 20, 30, 40, 50]);
+      var tm = m + add, h2 = h + Math.floor(tm / 60), m2 = tm % 60;
+      var correct = h2 + "時" + (m2 === 0 ? "" : m2 + "分");
+      var o = choiceOpts(correct, [(h2 + 1) + "時" + (m2 === 0 ? "" : m2 + "分"), h + "時" + (tm >= 60 ? tm - 60 + 60 : tm) + "分", h2 + "時" + (m2 + 10) + "分"]);
+      return Q({ type: "choice", text: h + "時" + (m === 0 ? "" : m + "分") + " の " + add + "分後は？", opts: o.opts, ans: o.ans,
+        exp: "60分たつと、時が1つ進む。",
+        detail: [m + "分 + " + add + "分 = " + tm + "分",
+          tm >= 60 ? tm + "分は 1時間" + (tm - 60) + "分 → 時が1つ進む" : "60分をこえないので時はそのまま",
+          "答えは " + correct] });
+    }
+    if (tier === 2) {
+      var h1 = ri(1, 10), m1 = pick([0, 10, 20, 30]), dur = pick([25, 35, 40, 45, 55, 70]);
+      var total = m1 + dur, hh = h1 + Math.floor(total / 60), mm = total % 60;
+      return Q({ type: "numeric", text: h1 + "時" + (m1 === 0 ? "" : m1 + "分") + " から " + hh + "時" + (mm === 0 ? "" : mm + "分") + " までは何分？", ans: String(dur),
+        exp: "「ちょうどの時こく」で区切って数える。",
+        detail: [h1 + "時" + (m1 === 0 ? "" : m1 + "分") + " → " + (h1 + 1) + "時 が " + (60 - m1) + "分",
+          "そこから " + hh + "時" + (mm === 0 ? "" : mm + "分") + " まで数える",
+          "合わせて " + dur + "分"] });
+    }
+    var mn = ri(1, 4), sc = pick([0, 15, 30, 45]);
+    return Q({ type: "numeric", text: mn + "分" + (sc === 0 ? "" : sc + "秒") + " = □ 秒。□に入る数は？", ans: String(mn * 60 + sc),
+      exp: "1分 = 60秒。",
+      detail: [mn + "分 = " + mn + "×60 = " + mn * 60 + "秒",
+        sc > 0 ? mn * 60 + " + " + sc + " = " + (mn * 60 + sc) : "秒はないのでそのまま",
+        "答えは " + (mn * 60 + sc)] });
+  };
+
   // 中3の中1帯: 正負の四則（加減・乗除・混合をランダムで）
   G.seifu_shisoku = function (tier) {
     var r = Math.random();
@@ -1491,11 +1837,14 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   LOGIC.newState = function (profile) {
     var skills = {}, learned = {};
     profile.skills.forEach(function (s) {
-      skills[s.id] = { g: 0, tier: 1, recent: [] };
+      skills[s.id] = { g: 0, tier: 1, recent: [], last: null };
       learned[s.id] = !s.preview; // preview: true のスキルは初期状態で「未履修」
     });
     return { v: 1, xp: 0, streak: { count: 0, last: null }, skills: skills,
-      learned: learned, snooze: {}, box: [], history: {}, totalGood: 0, totalAns: 0 };
+      learned: learned, snooze: {}, box: [], history: {}, totalGood: 0, totalAns: 0,
+      week: null, weekHistory: [],
+      best: { week: { key: null, acc: 0, timeMs: null, combo: 0 }, all: { acc: 0, timeMs: null, combo: 0 } },
+      mock: { testDate: null, rangeIds: [], history: [] } };
   };
 
   // レベル: 次のレベルまでの必要XPは 80 + (レベル-1)*30
@@ -1515,7 +1864,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   };
 
   // 解答を状態に反映（初回解答のみ呼ぶ）。戻り値: 獲得XP
-  LOGIC.applyAnswer = function (state, skillId, ok, tier) {
+  LOGIC.applyAnswer = function (state, skillId, ok, tier, today) {
     var ss = state.skills[skillId];
     if (!ss) return 0;
     var xp = 0;
@@ -1535,6 +1884,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       if (good >= 8) { ss.tier++; ss.recent = []; }
     }
     state.xp += xp;
+    if (today) ss.last = today;
     return xp;
   };
 
@@ -1579,6 +1929,12 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       return !state.learned || state.learned[s.id] !== false;
     });
     if (!pool.length) pool = profile.skills;
+    // 復習どき（tierの鮮度切れ）スキルを1〜2件優先的に差し込む
+    var reviewPool = pool.filter(function (s) { return LOGIC.isReviewDue(state, s.id, today); });
+    var reviewSlots = Math.min(2, reviewPool.length, Math.max(0, n - items.length));
+    for (var r = 0; r < reviewSlots; r++) {
+      items.push({ kind: "skill", skillId: reviewPool[r].id, review: true });
+    }
     // 弱点重み: ゲージが低いほど選ばれやすい（重み = 110 - ゲージ）
     var bySubj = { math: [], eng: [] };
     pool.forEach(function (s) { bySubj[s.subject].push(s); });
@@ -1602,6 +1958,128 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       items.push({ kind: "skill", skillId: sk.id });
     }
     return items;
+  };
+
+  /* ---- 復習どき（tierごとの鮮度切れ判定） ---- */
+  LOGIC.isReviewDue = function (state, skillId, today) {
+    var ss = state.skills[skillId];
+    if (!ss || !ss.last) return false;
+    var days = ss.tier === 3 ? 21 : ss.tier === 2 ? 14 : 0;
+    if (!days) return false;
+    return LOGIC.addDays(ss.last, days) <= today;
+  };
+  LOGIC.reviewDueSkills = function (profile, state, today) {
+    return profile.skills.filter(function (s) {
+      return (!state.learned || state.learned[s.id] !== false) && LOGIC.isReviewDue(state, s.id, today);
+    });
+  };
+
+  /* ---- 週間ミッション ---- */
+  LOGIC.weekKey = function (dateStr) {
+    var p = dateStr.split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    var dow = d.getDay(); // 0=日 … 6=土
+    var diff = dow === 0 ? -6 : 1 - dow; // 月曜まで戻す
+    return LOGIC.addDays(dateStr, diff);
+  };
+  LOGIC.daysUntil = function (today, dateStr) {
+    var toTime = function (s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).getTime(); };
+    return Math.round((toTime(dateStr) - toTime(today)) / 86400000);
+  };
+  // 週の切り替わり確認（冪等）。切り替わったら true を返す
+  LOGIC.ensureWeek = function (profile, state, today) {
+    var wk = LOGIC.weekKey(today);
+    if (state.week && state.week.key === wk) return false;
+    if (state.week) {
+      if (!state.weekHistory) state.weekHistory = [];
+      state.weekHistory.push({
+        key: state.week.key, math: state.week.math, eng: state.week.eng, third: state.week.third,
+        targets: state.week.targets, thirdType: state.week.thirdType, achieved: state.week.achieved
+      });
+      if (state.weekHistory.length > 12) state.weekHistory.shift();
+    }
+    var prev = state.week;
+    var mathTarget = prev ? Math.max(60, Math.round(prev.math * 0.85)) : 150;
+    var engTarget = prev ? Math.max(50, Math.round(prev.eng * 0.85)) : 120;
+    var due = LOGIC.reviewDueSkills(profile, state, today);
+    var thirdType = due.length > 0 ? "review" : "sets";
+    var thirdTarget = thirdType === "review" ? Math.min(due.length, 5) : 5;
+    state.week = {
+      key: wk, math: 0, eng: 0, third: 0,
+      targets: { math: mathTarget, eng: engTarget, third: thirdTarget },
+      thirdType: thirdType,
+      thirdIds: thirdType === "review" ? due.map(function (s) { return s.id; }) : [],
+      thirdCounted: {},
+      achieved: { math: false, eng: false, third: false }
+    };
+    if (!state.best) state.best = { week: { key: null, acc: 0, timeMs: null, combo: 0 }, all: { acc: 0, timeMs: null, combo: 0 } };
+    state.best.week = { key: wk, acc: 0, timeMs: null, combo: 0 };
+    return true;
+  };
+  LOGIC.checkWeekAchievements = function (state) {
+    var w = state.week, newly = [];
+    ["math", "eng", "third"].forEach(function (k) {
+      var done = w[k] >= w.targets[k];
+      if (done && !w.achieved[k]) { w.achieved[k] = true; newly.push(k); }
+    });
+    return newly;
+  };
+  // 1問ごとの週間XP加算＋復習ミッションの消化判定。戻り値: 新たに達成したミッションkeyの配列
+  LOGIC.applyWeekAnswer = function (state, skill, xp, today) {
+    if (!state.week) return [];
+    var w = state.week;
+    if (skill.subject === "math") w.math += xp;
+    else if (skill.subject === "eng") w.eng += xp;
+    if (w.thirdType === "review" && w.thirdIds.indexOf(skill.id) !== -1 && !w.thirdCounted[skill.id]) {
+      w.thirdCounted[skill.id] = true;
+      w.third = Math.min(w.targets.third, w.third + 1);
+    }
+    return LOGIC.checkWeekAchievements(state);
+  };
+  // 1セット終了ごとの「がんばった」ミッション消化判定（third=sets の週のみ加算）
+  LOGIC.applyWeekSet = function (state) {
+    if (!state.week) return [];
+    if (state.week.thirdType === "sets") {
+      state.week.third = Math.min(state.week.targets.third, state.week.third + 1);
+    }
+    return LOGIC.checkWeekAchievements(state);
+  };
+
+  /* ---- 自己ベスト（今週＋歴代） ---- */
+  LOGIC.updateBest = function (state, today, res) {
+    if (!state.best) state.best = { week: { key: null, acc: 0, timeMs: null, combo: 0 }, all: { acc: 0, timeMs: null, combo: 0 } };
+    var flags = { weekAcc: false, weekTime: false, weekCombo: false, allAcc: false, allTime: false, allCombo: false };
+    var wk = state.best.week, al = state.best.all;
+    if (res.acc > wk.acc) { wk.acc = res.acc; flags.weekAcc = true; }
+    if (res.acc > al.acc) { al.acc = res.acc; flags.allAcc = true; }
+    if (res.combo > wk.combo) { wk.combo = res.combo; flags.weekCombo = true; }
+    if (res.combo > al.combo) { al.combo = res.combo; flags.allCombo = true; }
+    if (res.timeEligible) {
+      if (wk.timeMs === null || res.timeMs < wk.timeMs) { wk.timeMs = res.timeMs; flags.weekTime = true; }
+      if (al.timeMs === null || res.timeMs < al.timeMs) { al.timeMs = res.timeMs; flags.allTime = true; }
+    }
+    return flags;
+  };
+
+  /* ---- 模擬テスト ---- */
+  LOGIC.composeMockTest = function (profile, rangeIds, n) {
+    n = n || 20;
+    var pool = profile.skills.filter(function (s) { return rangeIds.indexOf(s.id) !== -1; });
+    if (!pool.length) pool = profile.skills;
+    var items = [];
+    for (var i = 0; i < n; i++) {
+      var sk = pool[Math.floor(Math.random() * pool.length)];
+      items.push({ kind: "skill", skillId: sk.id, mock: true });
+    }
+    return items;
+  };
+  LOGIC.recordMockResult = function (state, today, good, total) {
+    if (!state.mock) state.mock = { testDate: null, rangeIds: [], history: [] };
+    var score = Math.round(good / total * 100);
+    var prev = state.mock.history.length ? state.mock.history[state.mock.history.length - 1].score : null;
+    state.mock.history.push({ date: today, score: score, testDate: state.mock.testDate });
+    if (state.mock.history.length > 20) state.mock.history.shift();
+    return { score: score, prev: prev };
   };
 
   LOGIC.updateStreakOnSet = function (state, today) {
@@ -1657,6 +2135,21 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     return { type: "choice", oneCol: true, text: item.q, opts: opts, ans: opts.indexOf(correct),
       exp: item.exp, detail: skill.lesson };
   };
+  // 聞き取り問題（音声→意味）: 文字が読めない学習者向け。TTS非対応環境では文字出題に自動フォールバック
+  LOGIC.buildListenQ = function (skill, tier) {
+    var w = pick(skill.listen);
+    var others = shuffle(skill.listen.filter(function (x) { return x[0] !== w[0]; })).slice(0, 3);
+    var opts = shuffle([w[1]].concat(others.map(function (x) { return x[1]; })));
+    return { type: "choice", oneCol: true,
+      text: "", // UI側で組み立てる（TTS対応可否で変わる）
+      listenLabel: skill.kind === "phrase" ? "きこえた あいさつ・ことばの意味は？" : "きこえた ことばの意味は？",
+      fallbackText: "「" + w[0] + "」の意味は？",
+      speakQ: w[0],
+      opts: opts, ans: opts.indexOf(w[1]),
+      exp: w[0] + " = " + w[1],
+      speak: w[0],
+      detail: skill.lesson };
+  };
   LOGIC.buildSortQ = function (skill, tier) {
     var pool = skill.sort.filter(function (x) { return x.t === tier; });
     if (!pool.length) pool = skill.sort.filter(function (x) { return x.t <= tier; });
@@ -1671,6 +2164,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     if (!skill) throw new Error("unknown skill: " + skillId);
     var q;
     if (skill.gen) q = mathgen.gen(skill.gen, tier);
+    else if (skill.listen) q = LOGIC.buildListenQ(skill, tier);
     else if (skill.vocab) q = LOGIC.buildVocabQ(skill, tier);
     else if (skill.bank) q = LOGIC.buildBankQ(skill, tier);
     else if (skill.sort) q = LOGIC.buildSortQ(skill, tier);
@@ -1717,21 +2211,29 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   var T = PROFILE.texts;
   var M = "−";
 
+  // 旧バージョンの保存データ・バックアップコードに新フィールドを補完する
+  function normalizeState(st) {
+    if (!st.learned) st.learned = {};
+    if (!st.snooze) st.snooze = {};
+    if (!st.week) st.week = null;
+    if (!st.weekHistory) st.weekHistory = [];
+    if (!st.best) st.best = { week: { key: null, acc: 0, timeMs: null, combo: 0 }, all: { acc: 0, timeMs: null, combo: 0 } };
+    if (!st.mock) st.mock = { testDate: null, rangeIds: [], history: [] };
+    PROFILE.skills.forEach(function (s) {
+      if (!st.skills[s.id]) st.skills[s.id] = { g: 0, tier: 1, recent: [], last: null };
+      else if (!("last" in st.skills[s.id])) st.skills[s.id].last = null;
+      if (!(s.id in st.learned)) st.learned[s.id] = !s.preview;
+    });
+    return st;
+  }
+
   /* ---- ストレージ層（差し替え可能） ---- */
   var STORE = {
     load: function () {
       try {
         var raw = localStorage.getItem(PROFILE.storageKey);
         if (!raw) return null;
-        var st = JSON.parse(raw);
-        // 新スキル・履修フラグが増えていたら補完
-        if (!st.learned) st.learned = {};
-        if (!st.snooze) st.snooze = {};
-        PROFILE.skills.forEach(function (s) {
-          if (!st.skills[s.id]) st.skills[s.id] = { g: 0, tier: 1, recent: [] };
-          if (!(s.id in st.learned)) st.learned[s.id] = !s.preview;
-        });
-        return st;
+        return normalizeState(JSON.parse(raw));
       } catch (e) { return null; }
     },
     save: function (st) {
@@ -1752,11 +2254,27 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     for (var i = 0; i < els.length; i++) els[i].textContent = val;
   }
   function locked() { return $("verdict").classList.contains("on"); }
+  function speak(text) {
+    if (typeof speechSynthesis === "undefined") return;
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US"; u.rate = 0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
   function toast(msg) {
     var t = $("toast");
     t.textContent = msg;
     t.classList.add("on");
     setTimeout(function () { t.classList.remove("on"); }, 1800);
+  }
+  function weekAchieveText(key) {
+    if (key === "math") return "🎉 今週の数学ミッション達成！";
+    if (key === "eng") return "🎉 今週の英語ミッション達成！";
+    return "🎉 今週のがんばりミッション達成！";
+  }
+  function formatMs(ms) {
+    var s = Math.round(ms / 1000);
+    return Math.floor(s / 60) + "分" + (s % 60) + "秒";
   }
 
   /* ---- 画面遷移 ---- */
@@ -1777,6 +2295,8 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   /* ---- ホーム ---- */
   function renderHome() {
     var today = LOGIC.todayStr();
+    var rolled = LOGIC.ensureWeek(PROFILE, state, today);
+    if (rolled) STORE.save(state);
     setText("greet", T.greet);
     setText("streak", LOGIC.streakDisplay(state, today) + " " + T.streakWord);
     var li = LOGIC.levelInfo(state.xp);
@@ -1786,6 +2306,44 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     var h = state.history[today];
     setText("today", h ? "今日: " + h.sets + "セット・" + h.total + "問（正解 " + h.good + "）" : "今日はまだ始めていない");
     renderAskLearned(today);
+    renderWeekMissions();
+    renderMockCard(today);
+  }
+
+  function renderWeekMissions() {
+    var w = state.week;
+    if (!w) return;
+    var box = $("week-missions");
+    box.innerHTML = "";
+    var rows = [
+      { key: "math", label: "数学：XP " + w.math + " / " + w.targets.math, cur: w.math, target: w.targets.math },
+      { key: "eng", label: "英語：XP " + w.eng + " / " + w.targets.eng, cur: w.eng, target: w.targets.eng },
+      { key: "third", label: (w.thirdType === "review" ? "復習：" : "がんばった：") + w.third + " / " + w.targets.third +
+          (w.thirdType === "review" ? "スキル" : "セット"), cur: w.third, target: w.targets.third }
+    ];
+    rows.forEach(function (r) {
+      var row = document.createElement("div");
+      row.className = "week-row" + (w.achieved[r.key] ? " done" : "");
+      var top = document.createElement("div"); top.className = "week-row-top";
+      var label = document.createElement("span"); label.textContent = r.label;
+      var check = document.createElement("span"); check.className = "week-check"; check.textContent = w.achieved[r.key] ? "✅" : "";
+      top.appendChild(label); top.appendChild(check);
+      var bar = document.createElement("div"); bar.className = "bar";
+      var fill = document.createElement("i"); fill.style.width = Math.min(100, Math.round(r.cur / r.target * 100)) + "%";
+      bar.appendChild(fill);
+      row.appendChild(top); row.appendChild(bar);
+      box.appendChild(row);
+    });
+  }
+
+  function renderMockCard(today) {
+    var card = $("mock-card");
+    var m = state.mock;
+    if (!m.testDate || today > m.testDate) { card.classList.remove("on"); return; }
+    card.classList.add("on");
+    var days = LOGIC.daysUntil(today, m.testDate);
+    $("mock-countdown").textContent = days <= 0 ? "テスト当日！ がんばれ" : "テストまで あと " + days + "日";
+    $("mock-start-btn").disabled = !(m.rangeIds && m.rangeIds.length);
   }
 
   // 履修確認プロンプト: 標準進度の月を過ぎても未履修のスキルを1件ずつ確認する
@@ -1819,12 +2377,24 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       items: LOGIC.composeMission(PROFILE, state, { focusSkillId: focusSkillId || null, n: 10 }),
       idx: 0, good: 0, combo: 0, maxCombo: 0, xpGain: 0,
       focusSkill: focusSkillId || null, firstTry: true, curQ: null, numBuf: "",
-      seen: {}
+      seen: {}, startTime: Date.now(), isMock: false
     };
     show("quiz");
     renderQuestion(false);
   }
-  function qKey(q) { return q.text + "|" + (q.sub || ""); }
+  function startMockTest() {
+    var ids = state.mock.rangeIds && state.mock.rangeIds.length
+      ? state.mock.rangeIds : PROFILE.skills.map(function (s) { return s.id; });
+    run = {
+      items: LOGIC.composeMockTest(PROFILE, ids, 20),
+      idx: 0, good: 0, combo: 0, maxCombo: 0, xpGain: 0,
+      focusSkill: null, firstTry: true, curQ: null, numBuf: "",
+      seen: {}, startTime: Date.now(), isMock: true
+    };
+    show("quiz");
+    renderQuestion(false);
+  }
+  function qKey(q) { return (q.speakQ || "") + "|" + q.text + "|" + (q.sub || ""); }
 
   function currentItem() { return run.items[run.idx]; }
 
@@ -1851,14 +2421,28 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     setText("combo", run.combo > 0 ? T.comboWord + " ×" + run.combo : "");
     var fb = $("focus-banner");
     var isBox = it.kind === "box";
-    fb.classList.toggle("on", !!run.focusSkill || isBox);
+    var isReview = !!it.review;
+    fb.classList.toggle("on", !!run.focusSkill || isBox || isReview);
     if (run.focusSkill) {
       var fsk = PROFILE.skills.filter(function (s) { return s.id === run.focusSkill; })[0];
       fb.textContent = "集中練習｜" + (fsk ? fsk.name : "");
     } else if (isBox) fb.textContent = "復習チャレンジ｜前にまちがえた問題";
+    else if (isReview) fb.textContent = "復習どき｜しばらく間があいたよ";
     setText("skill", q.skillName || "");
     $("q-text").innerHTML = "";
-    $("q-text").appendChild(document.createTextNode(q.text));
+    var hasTTS = typeof speechSynthesis !== "undefined";
+    if (q.speakQ && hasTTS) {
+      // 聞き取り問題: 問題文の代わりに再生ボタンを置く
+      $("q-text").appendChild(document.createTextNode(q.listenLabel || "きこえた ことばの意味は？"));
+      var spBtn = document.createElement("button");
+      spBtn.className = "big-btn"; spBtn.id = "q-speak";
+      spBtn.textContent = "🔊 きく";
+      spBtn.style.marginTop = "10px";
+      spBtn.addEventListener("click", function () { speak(q.speakQ); });
+      $("q-text").appendChild(spBtn);
+    } else {
+      $("q-text").appendChild(document.createTextNode(q.speakQ ? (q.fallbackText || q.text) : q.text));
+    }
     if (q.sub) {
       var subEl = document.createElement("span");
       subEl.className = "q-sub"; subEl.textContent = q.sub;
@@ -1967,16 +2551,25 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   function judge(ok, gaveUp) {
     var it = currentItem(), q = run.curQ, today = LOGIC.todayStr();
     if (run.firstTry) {
+      var xpThis;
       if (it.kind === "box") {
         LOGIC.boxOnAnswered(state, it.item, ok, today);
         var tierB = state.skills[q.skillId] ? state.skills[q.skillId].tier : 1;
-        run.xpGain += LOGIC.applyAnswer(state, q.skillId, ok, tierB);
+        xpThis = LOGIC.applyAnswer(state, q.skillId, ok, tierB, today);
       } else {
         var tier = state.skills[it.skillId].tier;
-        run.xpGain += LOGIC.applyAnswer(state, it.skillId, ok, tier);
+        xpThis = LOGIC.applyAnswer(state, it.skillId, ok, tier, today);
         if (!ok) LOGIC.boxOnWrong(state, it.skillId, q, today);
       }
+      run.xpGain += xpThis;
       if (ok) run.good++;
+      if (!run.isMock) {
+        var skillObj = PROFILE.skills.filter(function (s) { return s.id === q.skillId; })[0];
+        if (skillObj) {
+          var newlyWeek = LOGIC.applyWeekAnswer(state, skillObj, xpThis, today);
+          newlyWeek.forEach(function (k) { toast(weekAchieveText(k)); });
+        }
+      }
       STORE.save(state);
     }
     if (ok) { run.combo++; if (run.combo > run.maxCombo) run.maxCombo = run.combo; }
@@ -2027,12 +2620,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     var sp = $("v-speak");
     if (q.speak && typeof speechSynthesis !== "undefined") {
       sp.style.display = "inline-block";
-      sp.onclick = function () {
-        var u = new SpeechSynthesisUtterance(q.speak);
-        u.lang = "en-US"; u.rate = 0.85;
-        speechSynthesis.cancel();
-        speechSynthesis.speak(u);
-      };
+      sp.onclick = function () { speak(q.speak); };
     } else sp.style.display = "none";
     more.textContent = "くわしい解説を見る ▾";
     more.onclick = function () {
@@ -2052,13 +2640,26 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
   /* ---- 結果 ---- */
   function finishSet() {
     var today = LOGIC.todayStr();
+    if (run.isMock) {
+      var res = LOGIC.recordMockResult(state, today, run.good, run.items.length);
+      STORE.save(state);
+      showMockResult(res);
+      return;
+    }
     var bonus = run.maxCombo * 5;
     state.xp += bonus;
     run.xpGain += bonus;
     LOGIC.updateStreakOnSet(state, today);
     LOGIC.recordSet(state, today, run.good, run.items.length);
+    var newlyThird = LOGIC.applyWeekSet(state);
+    newlyThird.forEach(function (k) { toast(weekAchieveText(k)); });
+    var elapsed = Date.now() - run.startTime;
+    var acc = run.good / run.items.length;
+    var bestFlags = LOGIC.updateBest(state, today, { acc: acc, timeMs: elapsed, combo: run.maxCombo, timeEligible: acc >= 0.9 });
     STORE.save(state);
     show("result");
+    $("mock-block").classList.remove("on");
+    $("normal-result").classList.remove("hide");
     setText("crown", T.crown);
     setText("victory", T.victory);
     setText("vsub", T.vsub);
@@ -2078,6 +2679,55 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
         bar.style.width = Math.round(li.cur / li.need * 100) + "%";
       });
     });
+    renderBestBadges(bestFlags);
+    burstConfetti();
+    $("report-prev").classList.remove("on");
+  }
+
+  function renderBestBadges(flags) {
+    var box = $("best-badges");
+    box.innerHTML = "";
+    var labels = [];
+    if (flags.allAcc) labels.push("🏆 歴代ベスト正答率！");
+    else if (flags.weekAcc) labels.push("✨ 今週ベスト正答率！");
+    if (flags.allTime) labels.push("🏆 歴代ベストタイム！");
+    else if (flags.weekTime) labels.push("✨ 今週ベストタイム！");
+    if (flags.allCombo) labels.push("🏆 歴代ベストコンボ！");
+    else if (flags.weekCombo) labels.push("✨ 今週ベストコンボ！");
+    labels.forEach(function (t) {
+      var s = document.createElement("span");
+      s.className = "best-badge"; s.textContent = t;
+      box.appendChild(s);
+    });
+  }
+
+  function showMockResult(res) {
+    show("result");
+    $("normal-result").classList.add("hide");
+    $("mock-block").classList.add("on");
+    setText("crown", "📝");
+    setText("victory", "模擬テスト結果");
+    setText("vsub", "");
+    $("mock-score").textContent = res.score + "点";
+    var diff = "";
+    if (res.prev !== null) {
+      var d = res.score - res.prev;
+      diff = "前回 " + res.prev + "点 → 今回 " + res.score + "点（" + (d >= 0 ? "+" : "") + d + "）";
+    }
+    $("mock-diff").textContent = diff;
+    var histBox = $("mock-history");
+    histBox.innerHTML = "";
+    if (state.mock.history.length > 1) {
+      var h3 = document.createElement("h3"); h3.textContent = "これまでの記録";
+      histBox.appendChild(h3);
+      var ul = document.createElement("ul"); ul.style.margin = "0"; ul.style.paddingLeft = "18px"; ul.style.fontSize = "13px";
+      state.mock.history.slice(-5).reverse().forEach(function (r) {
+        var li = document.createElement("li");
+        li.textContent = r.date.replace(/-/g, "/") + "： " + r.score + "点";
+        ul.appendChild(li);
+      });
+      histBox.appendChild(ul);
+    }
     burstConfetti();
     $("report-prev").classList.remove("on");
   }
@@ -2130,6 +2780,10 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
           var pv = document.createElement("span");
           pv.className = "preview-badge"; pv.textContent = "予習";
           nm.appendChild(pv);
+        } else if (LOGIC.isReviewDue(state, s.id, LOGIC.todayStr())) {
+          var rv = document.createElement("span");
+          rv.className = "review-badge"; rv.textContent = "復習どき";
+          nm.appendChild(rv);
         }
         var pc = document.createElement("span"); pc.className = "pct"; pc.textContent = ss.g + "%";
         top.appendChild(nm); top.appendChild(pc);
@@ -2166,6 +2820,11 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     var li = LOGIC.levelInfo(state.xp);
     $("parent-sum").textContent = "累計 " + state.totalAns + "問（正解 " + state.totalGood + "） / 連続学習 " +
       LOGIC.streakDisplay(state, today) + "日 / Lv." + li.level + "（" + T.titles[LOGIC.titleIndex(li.level)] + "）";
+    var b = state.best;
+    $("parent-best").textContent = "今週ベスト：正答率 " + Math.round(b.week.acc * 100) + "% / タイム " +
+      (b.week.timeMs ? formatMs(b.week.timeMs) : "—") + " / コンボ ×" + b.week.combo +
+      "　｜　歴代ベスト：正答率 " + Math.round(b.all.acc * 100) + "% / タイム " +
+      (b.all.timeMs ? formatMs(b.all.timeMs) : "—") + " / コンボ ×" + b.all.combo;
     // 弱点上位3
     var weak = PROFILE.skills.slice().sort(function (a, b) { return state.skills[a.id].g - state.skills[b.id].g; }).slice(0, 3);
     $("parent-weak").innerHTML = "";
@@ -2197,6 +2856,30 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       label.appendChild(document.createTextNode(" " + (s.subject === "math" ? "数学：" : "英語：") + s.name));
       rb.appendChild(label);
     });
+    // 模擬テストの設定
+    $("mock-date").value = state.mock.testDate || "";
+    var mrb = $("mock-range-body");
+    mrb.innerHTML = "";
+    PROFILE.skills.forEach(function (s) {
+      var label2 = document.createElement("label");
+      label2.className = "range-row";
+      var cb2 = document.createElement("input");
+      cb2.type = "checkbox"; cb2.value = s.id;
+      cb2.checked = state.mock.rangeIds.indexOf(s.id) !== -1;
+      label2.appendChild(cb2);
+      label2.appendChild(document.createTextNode(" " + (s.subject === "math" ? "数学：" : "英語：") + s.name));
+      mrb.appendChild(label2);
+    });
+    var mh = $("mock-history-list");
+    mh.innerHTML = "";
+    if (state.mock.history.length) {
+      state.mock.history.slice(-5).reverse().forEach(function (r) {
+        var p = document.createElement("p");
+        p.style.margin = "2px 0"; p.style.fontSize = "13px";
+        p.textContent = r.date.replace(/-/g, "/") + "： " + r.score + "点";
+        mh.appendChild(p);
+      });
+    }
   }
 
   function reportText() {
@@ -2229,6 +2912,18 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     var act = t.getAttribute("data-act");
     if (act === "start") startMission(null);
     if (act === "again") startMission(run && run.focusSkill);
+    if (act === "mock-start") startMockTest();
+    if (act === "mock-save") {
+      var dateVal = $("mock-date").value;
+      state.mock.testDate = dateVal || null;
+      var boxes = $("mock-range-body").querySelectorAll("input[type=checkbox]");
+      var ids = [];
+      for (var mi = 0; mi < boxes.length; mi++) { if (boxes[mi].checked) ids.push(boxes[mi].value); }
+      state.mock.rangeIds = ids;
+      STORE.save(state);
+      toast("模擬テストの設定を保存しました");
+      renderParent();
+    }
     if (act === "map") show("map");
     if (act === "home") show("home");
     if (act === "parent") show("parent");
@@ -2278,7 +2973,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     }
     if (act === "backup-import") {
       try {
-        var st = LOGIC.importState($("backup-in").value);
+        var st = normalizeState(LOGIC.importState($("backup-in").value));
         state = st;
         STORE.save(state);
         toast("進捗を読み込みました");
