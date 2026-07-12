@@ -1,0 +1,2292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>ダンスステージ — 中1 数学・英語</title>
+<style>
+/* ===== 共通スタイル（テーマはトークンで切替） ===== */
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app-root {
+  min-height: 100dvh;
+  font-family: "Hiragino Maru Gothic ProN", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
+  background: var(--ap-bg);
+  color: var(--ap-ink);
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-root[data-app-theme="dance"] {
+  --ap-bg: linear-gradient(175deg, #fff3f8 0%, #f6ecff 60%, #fdeef2 100%);
+  --ap-surface: #ffffff;
+  --ap-ink: #43263c;
+  --ap-sub: #9a7791;
+  --ap-line: #f1d7e6;
+  --ap-accent: #e0407b;
+  --ap-accent-ink: #ffffff;
+  --ap-second: #8e6fd8;
+  --ap-glow: #f2a93b;
+  --ap-good: #2fa876;
+  --ap-good-bg: #e7f8ef;
+  --ap-miss: #e08a3c;
+  --ap-miss-bg: #fdf1e3;
+  --ap-gauge: linear-gradient(90deg, #e0407b, #8e6fd8);
+}
+.app-root[data-app-theme="battle"] {
+  --ap-bg: linear-gradient(180deg, #0e1420 0%, #101a2c 70%, #0d1526 100%);
+  --ap-surface: #1a2233;
+  --ap-ink: #ecf1fb;
+  --ap-sub: #8b97ad;
+  --ap-line: #2b3550;
+  --ap-accent: #46e08a;
+  --ap-accent-ink: #06281a;
+  --ap-second: #3d8bff;
+  --ap-glow: #f5c542;
+  --ap-good: #46e08a;
+  --ap-good-bg: #17301f;
+  --ap-miss: #f5a742;
+  --ap-miss-bg: #322512;
+  --ap-gauge: linear-gradient(90deg, #46e08a, #3d8bff);
+}
+
+.app {
+  max-width: 480px; margin: 0 auto; min-height: 100dvh;
+  display: flex; flex-direction: column;
+}
+.screen { flex: 1; display: none; flex-direction: column; padding: 22px 20px 8px; }
+.screen.on { display: flex; }
+
+h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
+.sub { color: var(--ap-sub); font-size: 13px; margin: 0; }
+
+.big-btn {
+  display: block; width: 100%; border: none; cursor: pointer;
+  background: var(--ap-accent); color: var(--ap-accent-ink);
+  font-family: inherit; font-size: 17px; font-weight: 700;
+  padding: 16px; border-radius: 16px; margin-top: 12px;
+}
+.big-btn.ghost {
+  background: transparent; color: var(--ap-accent);
+  border: 2px solid var(--ap-accent);
+}
+.big-btn:disabled { opacity: .35; cursor: default; }
+.big-btn:focus-visible, .opt:focus-visible, .key:focus-visible,
+.tok:focus-visible, .text-link:focus-visible {
+  outline: 3px solid var(--ap-second); outline-offset: 2px;
+}
+.text-link {
+  background: none; border: none; cursor: pointer; font-family: inherit;
+  color: var(--ap-sub); font-size: 12.5px; text-decoration: underline;
+  padding: 8px; margin: 10px auto 0; display: block;
+}
+
+/* --- ホーム --- */
+.home-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700;
+}
+.chip .fire { color: var(--ap-glow); }
+.level-card {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 18px; padding: 16px 18px; margin-bottom: 14px;
+}
+.level-card .title-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.level-card .rank { font-size: 18px; font-weight: 800; }
+.level-card .lv { font-size: 12.5px; color: var(--ap-sub); font-variant-numeric: tabular-nums; }
+.bar { height: 12px; border-radius: 999px; background: var(--ap-line); margin-top: 10px; overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 999px; background: var(--ap-gauge); }
+.mission-note { font-size: 12.5px; color: var(--ap-sub); text-align: center; margin-top: 8px; }
+.today-line { font-size: 13px; color: var(--ap-sub); text-align: center; margin: 4px 0 0; }
+
+/* --- クイズ --- */
+.quiz-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.qnum { font-size: 13px; color: var(--ap-sub); font-variant-numeric: tabular-nums; }
+.combo { font-size: 13px; font-weight: 800; color: var(--ap-glow); min-width: 6em; text-align: right; }
+.prog { height: 6px; border-radius: 999px; background: var(--ap-line); margin-bottom: 14px; overflow: hidden; }
+.prog > i { display: block; height: 100%; background: var(--ap-gauge); transition: width .3s; }
+.focus-banner {
+  display: none; font-size: 12.5px; font-weight: 800;
+  background: var(--ap-second); color: #fff; border-radius: 8px;
+  padding: 5px 10px; margin-bottom: 10px; align-self: flex-start;
+}
+.focus-banner.on { display: inline-block; }
+.q-skill { font-size: 12px; color: var(--ap-sub); letter-spacing: .06em; margin-bottom: 4px; }
+.q-text {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 16px; padding: 16px; font-size: 19px; font-weight: 700;
+  margin-bottom: 14px; text-align: center; overflow-x: auto;
+}
+.q-text .q-sub { display: block; font-size: 13px; font-weight: 400; color: var(--ap-sub); margin-top: 4px; }
+
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opts.one-col { grid-template-columns: 1fr; }
+.opt {
+  background: var(--ap-surface); border: 2px solid var(--ap-line); color: inherit;
+  border-radius: 14px; padding: 14px 8px; font-size: 17px; font-weight: 700;
+  cursor: pointer; font-family: inherit; min-height: 56px; overflow-wrap: anywhere;
+}
+.opt.good { border-color: var(--ap-good); background: var(--ap-good-bg); }
+.opt.miss { border-color: var(--ap-miss); background: var(--ap-miss-bg); }
+
+.num-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.num-display {
+  flex: 1; background: var(--ap-surface); border: 2px solid var(--ap-line);
+  border-radius: 14px; min-height: 54px; font-size: 24px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.key {
+  background: var(--ap-surface); border: 1px solid var(--ap-line); color: inherit;
+  border-radius: 12px; padding: 12px 0; font-size: 19px; font-weight: 700;
+  cursor: pointer; font-family: inherit; min-width: 54px;
+}
+.key:disabled { opacity: .25; cursor: default; }
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.sort-answer {
+  min-height: 56px; border: 2px dashed var(--ap-line); border-radius: 14px;
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; margin-bottom: 12px;
+  align-items: center;
+}
+.sort-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tok {
+  background: var(--ap-surface); border: 1px solid var(--ap-line); color: inherit;
+  border-radius: 10px; padding: 10px 14px; font-size: 16px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.sort-answer .tok { background: var(--ap-accent); color: var(--ap-accent-ink); border-color: var(--ap-accent); }
+
+/* --- 判定パネル --- */
+.verdict { margin-top: 14px; border-radius: 16px; padding: 14px 16px; display: none; }
+.verdict.on { display: block; }
+.verdict.good { background: var(--ap-good-bg); border: 1px solid var(--ap-good); }
+.verdict.miss { background: var(--ap-miss-bg); border: 1px solid var(--ap-miss); }
+.verdict .v-title { font-size: 17px; font-weight: 800; margin: 0 0 4px; }
+.verdict.good .v-title { color: var(--ap-good); }
+.verdict.miss .v-title { color: var(--ap-miss); }
+.verdict p.exp { margin: 0; font-size: 14px; }
+.verdict .big-btn { margin-top: 12px; padding: 13px; }
+.v-more {
+  display: inline-block; background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--ap-second); padding: 6px 0 0; text-decoration: underline;
+}
+.detail {
+  display: none; margin-top: 10px; background: var(--ap-surface);
+  border: 1px solid var(--ap-line); border-radius: 12px; padding: 12px 14px;
+}
+.detail.on { display: block; }
+.detail ol { margin: 0; padding-left: 20px; font-size: 13.5px; }
+.detail li { margin: 5px 0; }
+.v-terms:not(:empty) { margin-top: 10px; border-top: 1px dashed var(--ap-line); padding-top: 8px; }
+.v-terms p { margin: 3px 0; font-size: 12.5px; }
+.v-terms .t-head { font-weight: 800; color: var(--ap-second); font-size: 12px; }
+
+/* --- 結果 --- */
+.result-hero { text-align: center; margin: 22px 0 8px; position: relative; }
+.result-hero .crown { font-size: 52px; display: block; }
+.result-hero h2 { font-size: 26px; margin: 8px 0 2px; }
+.result-stats { display: flex; gap: 10px; margin: 16px 0; }
+.stat {
+  flex: 1; background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 14px; padding: 12px 6px; text-align: center;
+}
+.stat .n { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 11.5px; color: var(--ap-sub); }
+
+.confetti { position: absolute; inset: -20px 0 auto 0; height: 0; pointer-events: none; }
+.confetti i {
+  position: absolute; top: 0; width: 8px; height: 12px; border-radius: 2px;
+  animation: fall 1.6s ease-in forwards;
+}
+@keyframes fall {
+  from { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  to   { transform: translateY(240px) rotate(320deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti i { animation: none; opacity: 0; }
+  .prog > i { transition: none; }
+}
+
+/* --- スキルマップ --- */
+.band { margin-bottom: 16px; }
+.band-tag {
+  display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: .08em;
+  background: var(--ap-second); color: #fff; border-radius: 6px;
+  padding: 2px 8px; margin-bottom: 8px;
+}
+.skill-row {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; cursor: pointer;
+}
+.skill-row .sr-top { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; font-weight: 700; }
+.skill-row .pct { color: var(--ap-sub); font-variant-numeric: tabular-nums; font-weight: 700; flex: none; }
+.skill-row .bar { height: 8px; margin-top: 6px; }
+.skill-row .sr-hint { font-size: 11px; color: var(--ap-sub); margin-top: 4px; }
+.tier-badge {
+  font-size: 10.5px; font-weight: 800; border-radius: 5px; padding: 1px 6px;
+  background: var(--ap-line); color: var(--ap-sub); margin-left: 6px; vertical-align: 1px;
+}
+.preview-badge {
+  font-size: 10.5px; font-weight: 800; border-radius: 5px; padding: 1px 6px;
+  background: var(--ap-glow); color: #3a2a00; margin-left: 6px; vertical-align: 1px;
+}
+.range-row { display: block; font-size: 12.5px; margin: 4px 0; cursor: pointer; }
+.range-row input { width: 16px; height: 16px; vertical-align: -2px; }
+
+.reset-confirm {
+  display: none; margin-top: 8px; border: 2px solid var(--ap-miss);
+  border-radius: 12px; padding: 10px 12px; background: var(--ap-miss-bg);
+}
+.reset-confirm.on { display: block; }
+.reset-confirm p { margin: 0 0 8px; font-size: 12.5px; }
+.reset-confirm .al-btns { display: flex; gap: 8px; }
+.reset-confirm .big-btn { flex: 1; margin-top: 0; padding: 10px; font-size: 13.5px; }
+
+.ask-learned {
+  display: none; background: var(--ap-surface); border: 2px solid var(--ap-second);
+  border-radius: 14px; padding: 12px 14px; margin-top: 12px;
+}
+.ask-learned.on { display: block; }
+.ask-learned .al-q { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.ask-learned .al-btns { display: flex; gap: 8px; }
+.ask-learned .al-btns .big-btn { flex: 1; margin-top: 0; padding: 11px; font-size: 14px; }
+
+/* --- 保護者画面 --- */
+.parent-card {
+  background: var(--ap-surface); border: 1px solid var(--ap-line);
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+}
+.parent-card h3 { margin: 0 0 8px; font-size: 14px; }
+.parent-card table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.parent-card td, .parent-card th { padding: 4px 6px; text-align: left; font-variant-numeric: tabular-nums; }
+.parent-card th { color: var(--ap-sub); font-weight: 700; }
+.backup-area {
+  width: 100%; min-height: 70px; font-family: inherit; font-size: 12px;
+  border: 1px solid var(--ap-line); border-radius: 10px; padding: 8px;
+  background: var(--ap-surface); color: inherit;
+}
+
+/* --- フッター --- */
+.app-foot { padding: 8px 20px 14px; display: flex; gap: 8px; }
+.app-foot button {
+  flex: 1; background: transparent; border: none; color: var(--ap-sub);
+  font-family: inherit; font-size: 12px; cursor: pointer; padding: 6px 0;
+}
+.app-foot button.on { color: var(--ap-accent); font-weight: 800; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  background: var(--ap-ink); color: var(--ap-bg, #fff); border-radius: 999px;
+  padding: 8px 18px; font-size: 13px; font-weight: 700; opacity: 0;
+  pointer-events: none; transition: opacity .25s; z-index: 50;
+}
+.app-root[data-app-theme="battle"] .toast { background: #ecf1fb; color: #0e1420; }
+.app-root[data-app-theme="dance"] .toast { background: #43263c; color: #fff; }
+.toast.on { opacity: 1; }
+
+</style>
+</head>
+<body>
+<!--BODY-START-->
+<div class="app-root" data-app-theme="dance">
+<div class="app" id="app">
+
+  <!-- ホーム -->
+  <section class="screen on" data-screen="home">
+    <div class="home-top">
+      <h2 data-txt="greet"></h2>
+      <span class="chip"><span class="fire">🔥</span><span data-txt="streak"></span></span>
+    </div>
+    <div class="level-card">
+      <div class="title-line">
+        <span class="rank" data-txt="rank"></span>
+        <span class="lv" data-txt="lv"></span>
+      </div>
+      <div class="bar"><i id="home-xp-bar" style="width:0%"></i></div>
+    </div>
+    <button class="big-btn" data-act="start">▶ 今日のミッションを始める</button>
+    <p class="mission-note">10問・約7分</p>
+    <p class="today-line" data-txt="today"></p>
+    <div class="ask-learned" id="ask-learned">
+      <p class="al-q" id="al-q"></p>
+      <div class="al-btns">
+        <button class="big-btn" id="al-yes">習った</button>
+        <button class="big-btn ghost" id="al-no">まだ</button>
+      </div>
+    </div>
+    <button class="big-btn ghost" data-act="map">スキルマップを見る</button>
+    <button class="text-link" data-act="parent">保護者の方へ</button>
+  </section>
+
+  <!-- 出題 -->
+  <section class="screen" data-screen="quiz">
+    <div class="quiz-head">
+      <span class="qnum" data-txt="qnum"></span>
+      <span class="combo" data-txt="combo"></span>
+    </div>
+    <div class="prog"><i id="prog-bar" style="width:0%"></i></div>
+    <div class="focus-banner" id="focus-banner"></div>
+    <div class="q-skill" data-txt="skill"></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-body"></div>
+    <button class="text-link" id="giveup">わからない… 答えと解説を見る</button>
+    <div class="verdict" id="verdict">
+      <p class="v-title" id="v-title"></p>
+      <p class="exp" id="v-exp"></p>
+      <button class="v-more" id="v-more">くわしい解説を見る ▾</button>
+      <button class="v-more" id="v-speak" style="display:none">🔊 発音を聞く</button>
+      <div class="detail" id="v-detail"><ol id="v-steps"></ol><div class="v-terms" id="v-terms"></div></div>
+      <button class="big-btn" id="v-next"></button>
+    </div>
+  </section>
+
+  <!-- 結果 -->
+  <section class="screen" data-screen="result">
+    <div class="result-hero">
+      <div class="confetti" id="confetti"></div>
+      <span class="crown" data-txt="crown"></span>
+      <h2 data-txt="victory"></h2>
+      <p class="sub" data-txt="vsub"></p>
+    </div>
+    <div class="result-stats">
+      <div class="stat"><div class="n" data-txt="rGood"></div><div class="l">正解数</div></div>
+      <div class="stat"><div class="n" data-txt="rCombo"></div><div class="l">最大コンボ</div></div>
+      <div class="stat"><div class="n" data-txt="rXp"></div><div class="l">獲得XP</div></div>
+    </div>
+    <div class="level-card">
+      <div class="title-line">
+        <span class="rank" data-txt="rank2"></span>
+        <span class="lv" data-txt="lv2"></span>
+      </div>
+      <div class="bar"><i id="xp-bar" style="width:0%"></i></div>
+    </div>
+    <button class="big-btn" data-act="again">もう1セットやる</button>
+    <button class="big-btn ghost" data-act="report">📤 今日の成績レポートを見る・送る</button>
+    <div class="detail" id="report-prev" style="margin-bottom:8px">
+      <pre id="report-text" style="margin:0;font-family:inherit;font-size:13px;white-space:pre-wrap"></pre>
+      <button class="big-btn ghost" data-act="report-send" style="padding:11px;font-size:14px">共有・コピーする</button>
+    </div>
+    <button class="big-btn ghost" data-act="home">今日はここまで</button>
+  </section>
+
+  <!-- スキルマップ -->
+  <section class="screen" data-screen="map">
+    <h2>スキルマップ</h2>
+    <p class="sub" data-txt="mapsub"></p>
+    <div id="map-body" style="margin-top:14px"></div>
+    <button class="big-btn ghost" data-act="home" style="margin-top:6px">ホームに戻る</button>
+  </section>
+
+  <!-- 保護者画面 -->
+  <section class="screen" data-screen="parent">
+    <h2>保護者の方へ</h2>
+    <p class="sub">学習のようすと、データのバックアップができます</p>
+    <div class="parent-card" style="margin-top:14px">
+      <h3>この7日間</h3>
+      <table id="parent-days"></table>
+    </div>
+    <div class="parent-card">
+      <h3>全体のようす</h3>
+      <p id="parent-sum" style="margin:0;font-size:13px"></p>
+      <h3 style="margin-top:10px">いま弱いところ（習熟が低い順）</h3>
+      <ul id="parent-weak" style="margin:0;padding-left:18px;font-size:13px"></ul>
+    </div>
+    <div class="parent-card">
+      <h3>成績レポートを送る</h3>
+      <button class="big-btn" data-act="report-send" style="margin-top:4px;padding:12px;font-size:15px">📤 今日のレポートを共有</button>
+    </div>
+    <div class="parent-card">
+      <h3>学習範囲の設定（学校で習ったところ）</h3>
+      <p style="margin:0 0 6px;font-size:12px" class="sub">チェックした単元だけが「今日のミッション」に出ます。チェックのない単元はスキルマップから予習できます。学校の進度に合わせて増やしてください</p>
+      <div id="range-body"></div>
+      <button class="text-link" data-act="range-reset" style="margin:8px 0 0">履修状況を初期設定に戻す</button>
+      <div class="reset-confirm" id="range-reset-confirm">
+        <p>本当に初期設定（2026年7月の標準進度）に戻しますか？<br>成績・XP・学習の記録は消えません。</p>
+        <div class="al-btns">
+          <button class="big-btn" data-act="range-reset-yes">はい、戻す</button>
+          <button class="big-btn ghost" data-act="range-reset-no">やめる</button>
+        </div>
+      </div>
+    </div>
+    <div class="parent-card">
+      <h3>バックアップ（進捗の書き出し）</h3>
+      <p style="margin:0 0 6px;font-size:12px" class="sub">コードを書き出して保存しておくと、端末の買い替え時などに復元できます</p>
+      <button class="big-btn ghost" data-act="backup-export" style="padding:11px;font-size:14px">コードを書き出す</button>
+      <textarea class="backup-area" id="backup-out" readonly placeholder="ここにコードが出ます"></textarea>
+      <h3 style="margin-top:12px">復元（読み込み）</h3>
+      <textarea class="backup-area" id="backup-in" placeholder="バックアップコードを貼り付け"></textarea>
+      <button class="big-btn ghost" data-act="backup-import" style="padding:11px;font-size:14px">読み込む</button>
+    </div>
+    <div class="parent-card">
+      <h3>データの全消去</h3>
+      <p style="margin:0 0 4px;font-size:12px" class="sub">端末を譲るときや、最初からやり直したいときに使います</p>
+      <button class="text-link" data-act="wipe" style="margin:4px 0 0">すべてのデータを消す</button>
+      <div class="reset-confirm" id="wipe-confirm">
+        <p>成績・XP・学習記録・履修状況が<b>すべて消えます。元に戻せません。</b><br>
+        心配な場合は先に上の「バックアップ」でコードを書き出してください。<br>
+        消してよければ、下の欄に「リセット」と入力してください。</p>
+        <input class="backup-area" id="wipe-word" style="min-height:auto;margin-bottom:8px" placeholder="リセット と入力">
+        <div class="al-btns">
+          <button class="big-btn" data-act="wipe-yes" id="wipe-yes" disabled>すべて消す</button>
+          <button class="big-btn ghost" data-act="wipe-no">やめる</button>
+        </div>
+      </div>
+    </div>
+    <button class="big-btn ghost" data-act="home">ホームに戻る</button>
+  </section>
+
+  <div class="app-foot" id="app-foot">
+    <button data-go="home">ホーム</button>
+    <button data-go="map">マップ</button>
+    <button data-go="parent">保護者</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ===== 数学テンプレート生成器 =====
+ * MATHGEN.gen(genId, tier) -> 問題オブジェクト
+ *   { type:'choice'|'numeric', text, sub?, opts?, ans, exp, detail[] }
+ *   choice: ans = 正解のインデックス / numeric: ans = 正解文字列（"-24" "3.5" 等）
+ */
+(function (global) {
+  "use strict";
+  var M = "−"; // 表示用マイナス
+
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function sgn() { return Math.random() < 0.5 ? 1 : -1; }
+  function nz(a, b) { var v = 0; while (v === 0) v = ri(a, b); return v; }
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a || 1; }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function disp(n) { return String(n).replace(/-/g, M); }
+  function wrapNeg(n) { return n < 0 ? "（" + disp(n) + "）" : String(n); }
+  function fr(a, b) { // 約分した分数文字列
+    var g = gcd(a, b); a /= g; b /= g;
+    if (b < 0) { a = -a; b = -b; }
+    return b === 1 ? disp(a) : disp(a) + "/" + b;
+  }
+  function frRaw(a, b) { return disp(a) + "/" + b; }
+  function numStr(x) { // 小数の正規化（3.50 -> "3.5"）
+    return String(Math.round(x * 1000) / 1000);
+  }
+  // 多項式の表示: terms = [[係数, "x²"], [係数, "x"], [定数, ""]]
+  function poly(terms) {
+    var out = "";
+    terms.forEach(function (t) {
+      var c = t[0], sym = t[1];
+      if (c === 0) return;
+      var a = Math.abs(c);
+      var body = sym === "" ? String(a) : (a === 1 ? sym : a + sym);
+      if (out === "") out = (c < 0 ? M : "") + body;
+      else out += (c < 0 ? " " + M + " " : " + ") + body;
+    });
+    return out === "" ? "0" : out;
+  }
+  // 4択組み立て: correct + 候補から重複除いた3つ
+  function choiceOpts(correct, cands) {
+    var opts = [correct];
+    for (var i = 0; i < cands.length && opts.length < 4; i++) {
+      if (opts.indexOf(cands[i]) === -1) opts.push(cands[i]);
+    }
+    var salt = 2, guard = 0;
+    while (opts.length < 4 && guard < 60) { // 保険: 数字をずらした偽答を足す
+      var f = correct.replace(/\d+/, function (m) { return String(parseInt(m, 10) + salt); });
+      if (f === correct) f = correct.replace(/[a-z√π]/, salt + "$&"); // 数字がない式（y = x 等）への保険
+      if (opts.indexOf(f) === -1) opts.push(f);
+      salt++; guard++;
+    }
+    while (opts.length < 4) opts.push(correct + " ".repeat(opts.length)); // 最終保険（実質到達しない）
+    var ansVal = opts[0];
+    shuffle(opts);
+    return { opts: opts, ans: opts.indexOf(ansVal) };
+  }
+  function Q(o) { return o; }
+
+  var G = {};
+
+  /* ===== 土台（算数） ===== */
+  G.bunsu = function (tier) {
+    if (tier === 1) { // 同分母の加減
+      var d = pick([5, 7, 9, 11]), a = ri(1, d - 2), b = ri(1, d - a - 1);
+      var add = Math.random() < 0.7;
+      var x = add ? a + b : Math.max(a, b), y = add ? 0 : Math.min(a, b);
+      var q = add ? frRaw(a, d) + " + " + frRaw(b, d) : frRaw(x, d) + " " + M + " " + frRaw(y, d);
+      var num = add ? a + b : x - y;
+      var c = choiceOpts(fr(num, d), [frRaw(num, d * 2), fr(num + 1, d), frRaw(add ? a * b : x * y, d)]);
+      return Q({ type: "choice", text: q + " を計算しよう", opts: c.opts, ans: c.ans,
+        exp: "分母が同じ分数は、分子だけを計算する。",
+        detail: ["分母（下の数）が同じときは分母はそのまま",
+          "分子（上の数）だけを計算: " + (add ? a + "+" + b + "=" + num : x + M + y + "=" + num),
+          "答えは " + fr(num, d) + (gcd(num, d) > 1 ? "（約分を忘れずに）" : "")] });
+    }
+    if (tier === 2) { // 異分母の加減
+      var p = pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [2, 7]]);
+      var d1 = p[0], d2 = p[1], a2 = ri(1, d1 - 1), b2 = ri(1, d2 - 1);
+      var L = d1 * d2 / gcd(d1, d2);
+      var n1 = a2 * L / d1, n2 = b2 * L / d2;
+      var c2 = choiceOpts(fr(n1 + n2, L), [frRaw(a2 + b2, d1 + d2), fr(n1 - n2, L), frRaw(n1 + n2, L * 2)]);
+      return Q({ type: "choice", text: frRaw(a2, d1) + " + " + frRaw(b2, d2) + " を計算しよう", opts: c2.opts, ans: c2.ans,
+        exp: "分母をそろえて（通分して）から分子をたす。",
+        detail: ["分母がちがうときは、まず通分する。" + d1 + " と " + d2 + " の最小公倍数は " + L,
+          frRaw(a2, d1) + " = " + frRaw(n1, L) + "、" + frRaw(b2, d2) + " = " + frRaw(n2, L),
+          "分子をたす: " + n1 + "+" + n2 + "=" + (n1 + n2),
+          "答えは " + fr(n1 + n2, L)] });
+    }
+    // t3: 乗除
+    var mul = Math.random() < 0.6;
+    var a3 = ri(1, 4), b3 = pick([2, 3, 5]), c3 = ri(1, 4), d3 = pick([2, 3, 5]);
+    if (mul) {
+      var cM = choiceOpts(fr(a3 * c3, b3 * d3), [fr(a3 * d3, b3 * c3), frRaw(a3 + c3, b3 + d3), fr(a3 * c3 + 1, b3 * d3)]);
+      return Q({ type: "choice", text: frRaw(a3, b3) + " × " + frRaw(c3, d3) + " を計算しよう", opts: cM.opts, ans: cM.ans,
+        exp: "かけ算は 分子どうし・分母どうしをかける。",
+        detail: ["分子どうしをかける: " + a3 + "×" + c3 + "=" + (a3 * c3),
+          "分母どうしをかける: " + b3 + "×" + d3 + "=" + (b3 * d3),
+          "答えは " + fr(a3 * c3, b3 * d3) + "（約分できるときは約分）"] });
+    }
+    var cD = choiceOpts(fr(a3 * d3, b3 * c3), [fr(a3 * c3, b3 * d3), frRaw(a3, b3 * c3), fr(b3 * d3, a3 * c3)]);
+    return Q({ type: "choice", text: frRaw(a3, b3) + " ÷ " + frRaw(c3, d3) + " を計算しよう", opts: cD.opts, ans: cD.ans,
+      exp: "わり算は、うしろの分数をひっくり返してかける。",
+      detail: ["÷" + frRaw(c3, d3) + " は ×" + frRaw(d3, c3) + " に直す（逆数をかける）",
+        frRaw(a3, b3) + " × " + frRaw(d3, c3) + " を計算",
+        "分子: " + a3 + "×" + d3 + "=" + (a3 * d3) + "、分母: " + b3 + "×" + c3 + "=" + (b3 * c3),
+        "答えは " + fr(a3 * d3, b3 * c3)] });
+  };
+
+  G.yakubun = function (tier) {
+    var base = tier === 1 ? [[1, 2], [1, 3], [2, 3], [1, 4], [3, 4]] : [[2, 5], [3, 5], [3, 7], [4, 7], [5, 6], [5, 8]];
+    var f = pick(base), k = tier === 3 ? pick([6, 8, 12]) : pick([2, 3, 4, 5]);
+    var a = f[0] * k, b = f[1] * k;
+    var g2 = pick([2, 3].filter(function (x) { return k % x === 0; })) || 1;
+    var c = choiceOpts(fr(f[0], f[1]), [frRaw(a / g2, b / g2), frRaw(f[1], f[0]) === fr(f[0], f[1]) ? frRaw(a, b) : frRaw(f[1], f[0]), frRaw(a, b)]);
+    return Q({ type: "choice", text: frRaw(a, b) + " を約分しよう", opts: c.opts, ans: c.ans,
+      exp: "分子と分母を同じ数（最大公約数）でわる。",
+      detail: [a + " と " + b + " の最大公約数は " + k,
+        "分子: " + a + "÷" + k + "=" + f[0] + "、分母: " + b + "÷" + k + "=" + f[1],
+        "答えは " + fr(f[0], f[1]) + "。これ以上われない形まで割るのがコツ"] });
+  };
+
+  G.shosu = function (tier) {
+    if (tier <= 2) {
+      var a = ri(10, 89) / 10, b = ri(10, 89) / 10;
+      while (a === b) b = ri(10, 89) / 10; // 差が0になる問題を避ける
+      var sub = tier === 2;
+      if (sub && a < b) { var t = a; a = b; b = t; }
+      var ansV = Math.round((sub ? a - b : a + b) * 100) / 100;
+      return Q({ type: "numeric", dec: true, text: numStr(a) + (sub ? " " + M + " " : " + ") + numStr(b) + " を計算しよう",
+        ans: numStr(ansV),
+        exp: "小数点の位置をそろえて計算する。",
+        detail: ["小数点の位置をたてにそろえる",
+          "整数と同じように" + (sub ? "ひき算" : "たし算") + "する",
+          "答えは " + numStr(ansV) + "（小数点はそのままの位置）"] });
+    }
+    var c = ri(11, 39) / 10, d = ri(2, 9);
+    var ans3 = Math.round(c * d * 100) / 100;
+    return Q({ type: "numeric", dec: true, text: numStr(c) + " × " + d + " を計算しよう", ans: numStr(ans3),
+      exp: "小数点を無視してかけ算し、あとで小数点を打つ。",
+      detail: ["小数点を無視して計算: " + Math.round(c * 10) + "×" + d + "=" + Math.round(c * 10) * d,
+        numStr(c) + " は小数点以下1けた → 答えも1けた戻す",
+        "答えは " + numStr(ans3)] });
+  };
+
+  /* ===== 正負の数 ===== */
+  G.seifu_kagen = function (tier) {
+    if (tier === 1) {
+      var a = nz(-9, 9), b = nz(-9, 9), ans = a + b;
+      return Q({ type: "numeric", text: wrapNeg(a) + " + " + wrapNeg(b) + " を計算しよう", ans: String(ans),
+        exp: (a < 0 === b < 0 ? "同符号の和は、絶対値の和にその符号。" : "異符号の和は、絶対値の差に大きい方の符号。"),
+        detail: a < 0 === b < 0
+          ? ["符号が同じ（" + (a < 0 ? "どちらもマイナス" : "どちらもプラス") + "）",
+             "数字の部分をたす: " + Math.abs(a) + "+" + Math.abs(b) + "=" + Math.abs(ans),
+             "符号はそのまま → 答えは " + disp(ans)]
+          : ["符号がちがう → 数字の部分はひき算: " + Math.max(Math.abs(a), Math.abs(b)) + M + Math.min(Math.abs(a), Math.abs(b)) + "=" + Math.abs(ans),
+             "符号は数字が大きい方（" + disp(Math.abs(a) >= Math.abs(b) ? a : b) + "）に合わせる",
+             "答えは " + disp(ans)] });
+    }
+    if (tier === 2) {
+      var a2 = nz(-9, 9), b2 = nz(-9, 9), c2 = nz(-9, 9), ans2 = a2 + b2 - c2;
+      return Q({ type: "numeric", text: wrapNeg(a2) + " + " + wrapNeg(b2) + " " + M + " " + wrapNeg(c2) + " を計算しよう", ans: String(ans2),
+        exp: "ひき算は「符号を変えてたす」に直すとミスが減る。",
+        detail: [M + wrapNeg(c2) + " は +" + wrapNeg(-c2) + " と同じ",
+          "左から順に: " + disp(a2) + "+" + wrapNeg(b2) + "=" + disp(a2 + b2),
+          disp(a2 + b2) + "+" + wrapNeg(-c2) + "=" + disp(ans2),
+          "答えは " + disp(ans2)] });
+    }
+    var a3 = nz(-30, 30), b3 = nz(-30, 30), ans3 = a3 - b3;
+    return Q({ type: "numeric", text: disp(a3) + " " + M + " " + wrapNeg(b3) + " を計算しよう", ans: String(ans3),
+      exp: b3 < 0 ? "マイナスをひくのは、たすのと同じ。" : "数直線で左に " + b3 + " 動くと考える。",
+      detail: [M + wrapNeg(b3) + " は +" + wrapNeg(-b3) + " に直せる",
+        disp(a3) + " + " + wrapNeg(-b3) + " を計算する",
+        "答えは " + disp(ans3)] });
+  };
+
+  G.seifu_jojo = function (tier) {
+    if (tier === 1) {
+      var a = nz(-9, 9), b = nz(-9, 9), ans = a * b;
+      return Q({ type: "numeric", text: wrapNeg(a) + " × " + wrapNeg(b) + " を計算しよう", ans: String(ans),
+        exp: "符号のルール: 同符号はプラス、異符号はマイナス。",
+        detail: ["まず符号を決める: " + (a < 0 ? "−" : "+") + " × " + (b < 0 ? "−" : "+") + " = " + (a * b < 0 ? "−" : "+"),
+          "数字の部分をかける: " + Math.abs(a) + "×" + Math.abs(b) + "=" + Math.abs(ans),
+          "答えは " + disp(ans)] });
+    }
+    if (tier === 2) {
+      var q = nz(-9, 9), d = nz(-9, 9), a2 = q * d;
+      return Q({ type: "numeric", text: wrapNeg(a2) + " ÷ " + wrapNeg(d) + " を計算しよう", ans: String(q),
+        exp: "わり算も符号のルールはかけ算と同じ。",
+        detail: ["符号を決める: " + (a2 < 0 ? "−" : "+") + " ÷ " + (d < 0 ? "−" : "+") + " = " + (q < 0 ? "−" : "+"),
+          "数字の部分をわる: " + Math.abs(a2) + "÷" + Math.abs(d) + "=" + Math.abs(q),
+          "答えは " + disp(q)] });
+    }
+    var x = nz(-6, 6), y = nz(-6, 6), z = pick([-2, 2, -3, 3]);
+    var ans3 = x * y * z;
+    return Q({ type: "numeric", text: wrapNeg(x) + " × " + wrapNeg(y) + " × " + wrapNeg(z) + " を計算しよう", ans: String(ans3),
+      exp: "マイナスの個数が偶数ならプラス、奇数ならマイナス。",
+      detail: ["マイナスの個数を数える: " + [x, y, z].filter(function (v) { return v < 0; }).length + "個",
+        "偶数個ならプラス、奇数個ならマイナス → 答えの符号は " + (ans3 < 0 ? "−" : "+"),
+        "数字をかける: " + Math.abs(x) + "×" + Math.abs(y) + "×" + Math.abs(z) + "=" + Math.abs(ans3),
+        "答えは " + disp(ans3)] });
+  };
+
+  G.shisoku = function (tier) {
+    if (tier === 1) {
+      var a = nz(-9, 9), b = nz(-5, 5), c = nz(-5, 5), ans = a + b * c;
+      return Q({ type: "numeric", text: wrapNeg(a) + " + " + wrapNeg(b) + " × " + wrapNeg(c) + " を計算しよう", ans: String(ans),
+        exp: "かけ算・わり算を先に計算する。",
+        detail: ["先にかけ算: " + wrapNeg(b) + "×" + wrapNeg(c) + "=" + disp(b * c),
+          "つぎにたし算: " + disp(a) + "+" + wrapNeg(b * c) + "=" + disp(ans),
+          "答えは " + disp(ans)] });
+    }
+    if (tier === 2) {
+      var a2 = nz(-8, 8), b2 = nz(-8, 8), c2 = nz(-4, 4), ans2 = (a2 - b2) * c2;
+      return Q({ type: "numeric", text: "（" + disp(a2) + " " + M + " " + wrapNeg(b2) + "）× " + wrapNeg(c2) + " を計算しよう", ans: String(ans2),
+        exp: "かっこの中を先に計算する。",
+        detail: ["かっこの中: " + disp(a2) + M + wrapNeg(b2) + "=" + disp(a2 - b2),
+          "かけ算: " + wrapNeg(a2 - b2) + "×" + wrapNeg(c2) + "=" + disp(ans2),
+          "答えは " + disp(ans2)] });
+    }
+    var a3 = nz(-9, 9), b3 = pick([-3, -2, 2, 3]), ans3 = a3 + b3 * b3 * (b3 < 0 ? 1 : 1);
+    var sq = b3 * b3; ans3 = a3 - sq;
+    return Q({ type: "numeric", text: disp(a3) + " " + M + " " + wrapNeg(b3) + "² を計算しよう", ans: String(ans3),
+      exp: "累乗を先に計算してから、たしひきをする。",
+      detail: ["累乗を先に: " + wrapNeg(b3) + "² = " + wrapNeg(b3) + "×" + wrapNeg(b3) + " = " + sq,
+        "つぎに: " + disp(a3) + M + sq + " を計算",
+        "答えは " + disp(ans3)] });
+  };
+
+  G.ruijo = function (tier) {
+    var a = pick([2, 3, 4, 5]);
+    if (tier === 1) {
+      return Q({ type: "numeric", text: "（" + M + a + "）² を計算しよう", ans: String(a * a),
+        exp: "（−a）² は −a を2回かける。マイナス×マイナスでプラス。",
+        detail: ["（" + M + a + "）² = （" + M + a + "）×（" + M + a + "）",
+          "マイナス×マイナスはプラス",
+          a + "×" + a + "=" + a * a + " → 答えは " + a * a] });
+    }
+    if (tier === 2) {
+      return Q({ type: "numeric", text: M + a + "² を計算しよう", ans: String(-a * a),
+        exp: "−a² は「a² にマイナスをつけたもの」。2乗されるのは a だけ。",
+        detail: [M + a + "² は （" + M + a + "）² とはちがう！",
+          "2乗されるのは " + a + " だけ: " + a + "²=" + a * a,
+          "それにマイナスがつく → 答えは " + M + (a * a)] });
+    }
+    var b = pick([2, 3]);
+    return Q({ type: "numeric", text: "（" + M + b + "）³ を計算しよう", ans: String(-b * b * b),
+      exp: "マイナスを奇数回かけるとマイナス。",
+      detail: ["（" + M + b + "）³ = （" + M + b + "）×（" + M + b + "）×（" + M + b + "）",
+        "マイナスが3個（奇数個）→ 答えはマイナス",
+        b + "×" + b + "×" + b + "=" + b * b * b + " → 答えは " + M + (b * b * b)] });
+  };
+
+  /* ===== 文字と式 ===== */
+  G.moji_arawashi = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 9), v = pick(["a", "x", "b"]);
+      var c = choiceOpts(a + v, [v + a, a + "+" + v, v + "×" + a]);
+      return Q({ type: "choice", text: v + " × " + a + " を文字式のきまりで表そう", opts: c.opts, ans: c.ans,
+        exp: "かけ算の記号×は省き、数を文字の前に書く。",
+        detail: ["×の記号は書かない", "数字は文字の前に置く: " + v + "×" + a + " → " + a + v,
+          "アルファベット順に並べるのもきまり"] });
+    }
+    if (tier === 2) {
+      var b = ri(2, 9), v2 = pick(["a", "x", "y"]);
+      var c2 = choiceOpts(v2 + "/" + b, [b + "/" + v2, v2 + M + b, v2 + "÷" + b]);
+      return Q({ type: "choice", text: v2 + " ÷ " + b + " を文字式のきまりで表そう", opts: c2.opts, ans: c2.ans,
+        exp: "わり算は分数の形で書く。",
+        detail: ["÷の記号は使わず、分数にする",
+          v2 + "÷" + b + " → 分子が " + v2 + "、分母が " + b,
+          "答えは " + v2 + "/" + b] });
+    }
+    var a3 = ri(2, 5), v3 = pick(["a", "x"]);
+    var c3 = choiceOpts(a3 + v3 + "²", [a3 + v3, "（" + a3 + v3 + "）²", a3 + "+" + v3 + "²"]);
+    return Q({ type: "choice", text: v3 + " × " + v3 + " × " + a3 + " を文字式のきまりで表そう", opts: c3.opts, ans: c3.ans,
+      exp: "同じ文字のかけ算は累乗（2乗）で書く。",
+      detail: [v3 + "×" + v3 + " は " + v3 + "²",
+        "数字の " + a3 + " は前に置く",
+        "答えは " + a3 + v3 + "²"] });
+  };
+
+  G.moji_keisan = function (tier) {
+    var v = pick(["x", "a"]);
+    if (tier === 1) {
+      var a = nz(2, 9), b = nz(-9, -2) * (Math.random() < 0.5 ? 1 : -1) || 3;
+      if (a + b === 0) b += 1;
+      var ansC = a + b;
+      var c = choiceOpts(poly([[ansC, v]]), [poly([[a - b, v]]), poly([[a + b, v + "²"]]), poly([[a, v], [b, ""]])]);
+      return Q({ type: "choice", text: poly([[a, v]]) + " + " + (b < 0 ? "（" + poly([[b, v]]) + "）" : poly([[b, v]])) + " を計算しよう",
+        opts: c.opts, ans: c.ans,
+        exp: "同じ文字の項は、係数どうしを計算してまとめる。",
+        detail: ["どちらも " + v + " の項なのでまとめられる",
+          "係数を計算: " + disp(a) + "+" + wrapNeg(b) + "=" + disp(ansC),
+          "答えは " + poly([[ansC, v]]) + "（" + v + "² にはならない）"] });
+    }
+    if (tier === 2) {
+      var a2 = nz(2, 7), b2 = nz(-8, 8), c2 = nz(-7, 7), d2 = nz(-8, 8);
+      if (a2 + c2 === 0) c2 += 1;
+      if (b2 + d2 === 0) d2 += 1;
+      var ans2 = poly([[a2 + c2, v], [b2 + d2, ""]]);
+      var cc = choiceOpts(ans2, [poly([[a2 + c2 + b2 + d2, v]]), poly([[a2 - c2, v], [b2 - d2, ""]]), poly([[a2 + c2, v], [b2 - d2, ""]])]);
+      return Q({ type: "choice", text: poly([[a2, v], [b2, ""]]) + " + " + poly([[c2, v], [d2, ""]]).replace(/^−/, "（" + M) + (poly([[c2, v], [d2, ""]]).charAt(0) === M ? "）" : "") + " を計算しよう",
+        opts: cc.opts, ans: cc.ans,
+        exp: "文字の項どうし、数の項どうしをそれぞれまとめる。",
+        detail: [v + " の項: " + disp(a2) + "+" + wrapNeg(c2) + "=" + disp(a2 + c2),
+          "数の項: " + disp(b2) + "+" + wrapNeg(d2) + "=" + disp(b2 + d2),
+          "答えは " + ans2 + "（文字と数はまとめられない）"] });
+    }
+    var a3 = nz(3, 8), b3 = nz(2, 7), c3 = nz(2, 9);
+    var ans3 = poly([[a3 - b3, v], [c3, ""]]);
+    var c3o = choiceOpts(ans3, [poly([[a3 - b3, v], [-c3, ""]]), poly([[a3 + b3, v], [-c3, ""]]), poly([[a3 - b3 + c3, v]])]);
+    return Q({ type: "choice", text: poly([[a3, v]]) + " " + M + " （" + poly([[b3, v], [-c3, ""]]) + "） を計算しよう",
+      opts: c3o.opts, ans: c3o.ans,
+      exp: "かっこの前がマイナスなら、かっこの中の符号を全部変えて外す。",
+      detail: ["かっこを外す: " + M + "（" + poly([[b3, v], [-c3, ""]]) + "） → " + poly([[-b3, v], [c3, ""]]),
+        "式は " + poly([[a3, v]]) + " " + (b3 > 0 ? M : "+") + " " + b3 + v + " + " + c3 + " になる",
+        v + " の項: " + a3 + M + b3 + "=" + (a3 - b3),
+        "答えは " + ans3] });
+  };
+
+  G.bunpai = function (tier) {
+    var v = "x";
+    if (tier === 1) {
+      var a = ri(2, 6), b = ri(2, 7), c = ri(1, 9);
+      var ans = poly([[a * b, v], [a * c, ""]]);
+      var o = choiceOpts(ans, [poly([[a * b, v], [c, ""]]), poly([[a + b, v], [a + c, ""]]), poly([[a * b + a * c, v]])]);
+      return Q({ type: "choice", text: a + "（" + poly([[b, v], [c, ""]]) + "） を計算しよう", opts: o.opts, ans: o.ans,
+        exp: "外の数を、かっこの中の両方にかける（分配法則）。",
+        detail: [a + " を両方の項にかける",
+          a + "×" + b + v + "=" + a * b + v + "、" + a + "×" + c + "=" + a * c,
+          "答えは " + ans + "（後ろの項へのかけ忘れに注意）"] });
+    }
+    if (tier === 2) {
+      var a2 = ri(2, 5), b2 = ri(2, 7), c2 = ri(1, 9);
+      var ans2 = poly([[-a2 * b2, v], [a2 * c2, ""]]);
+      var o2 = choiceOpts(ans2, [poly([[-a2 * b2, v], [-a2 * c2, ""]]), poly([[a2 * b2, v], [-a2 * c2, ""]]), poly([[-a2 * b2, v], [c2, ""]])]);
+      return Q({ type: "choice", text: M + a2 + "（" + poly([[b2, v], [-c2, ""]]) + "） を計算しよう", opts: o2.opts, ans: o2.ans,
+        exp: "マイナスの数を分配すると、中の符号が全部変わる。",
+        detail: [M + a2 + " を両方にかける",
+          M + a2 + "×" + b2 + v + "=" + M + (a2 * b2) + v,
+          M + a2 + "×（" + M + c2 + "）=+" + a2 * c2 + "（マイナス×マイナス）",
+          "答えは " + ans2] });
+    }
+    var a3 = ri(2, 4), b3 = ri(2, 6), c3 = ri(1, 8), d3 = ri(2, 5);
+    var ans3 = poly([[a3 * b3 + d3, v], [a3 * c3, ""]]);
+    var o3 = choiceOpts(ans3, [poly([[a3 * b3, v], [a3 * c3 + d3, ""]]), poly([[a3 * b3 - d3, v], [a3 * c3, ""]]), poly([[(a3 + d3) * b3, v], [a3 * c3, ""]])]);
+    return Q({ type: "choice", text: a3 + "（" + poly([[b3, v], [c3, ""]]) + "） + " + d3 + v + " を計算しよう", opts: o3.opts, ans: o3.ans,
+      exp: "まず分配法則でかっこを外し、同じ文字の項をまとめる。",
+      detail: ["分配: " + a3 + "（" + poly([[b3, v], [c3, ""]]) + "）=" + poly([[a3 * b3, v], [a3 * c3, ""]]),
+        v + " の項をまとめる: " + a3 * b3 + v + "+" + d3 + v + "=" + (a3 * b3 + d3) + v,
+        "答えは " + ans3] });
+  };
+
+  G.hirei = function (tier) {
+    if (tier === 1) {
+      var x = ri(2, 4), a = pick([-4, -3, -2, 2, 3, 4]), y = a * x;
+      var ans = "y = " + poly([[a, "x"]]);
+      var o = choiceOpts(ans, ["y = " + poly([[a + 1, "x"]]), "y = " + poly([[-a, "x"]]), "y = " + poly([[y, "x"]])]);
+      return Q({ type: "choice", oneCol: true, text: "y は x に比例し、x = " + x + " のとき y = " + disp(y) + "。y を x の式で表そう",
+        opts: o.opts, ans: o.ans,
+        exp: "比例の式は y = ax。a（比例定数）は y ÷ x で求める。",
+        detail: ["比例の式は y = ax の形",
+          "比例定数 a = y ÷ x = " + disp(y) + " ÷ " + x + " = " + disp(a),
+          "答えは " + ans] });
+    }
+    if (tier === 2) {
+      var x2 = ri(2, 4), y2 = nz(2, 6) * (Math.random() < 0.5 ? 1 : -1), a2 = x2 * y2;
+      var ans2 = "y = " + disp(a2) + "/x";
+      var o2 = choiceOpts(ans2, ["y = " + poly([[a2, "x"]]), "y = " + disp(y2) + "/x", "y = " + disp(a2 + 2) + "/x"]);
+      return Q({ type: "choice", oneCol: true, text: "y は x に反比例し、x = " + x2 + " のとき y = " + disp(y2) + "。y を x の式で表そう",
+        opts: o2.opts, ans: o2.ans,
+        exp: "反比例の式は y = a/x。a は x × y で求める。",
+        detail: ["反比例の式は y = a/x の形",
+          "a = x × y = " + x2 + " × " + wrapNeg(y2) + " = " + disp(a2),
+          "答えは " + ans2] });
+    }
+    var a3 = nz(-5, 5), x3 = nz(-4, 4), y3 = a3 * x3;
+    return Q({ type: "numeric", text: "y = " + poly([[a3, "x"]]) + " で、x = " + disp(x3) + " のときの y の値は？", ans: String(y3),
+      exp: "式の x に値を代入して計算する。",
+      detail: ["x に " + disp(x3) + " を代入する",
+        "y = " + disp(a3) + " × " + wrapNeg(x3),
+        "符号に注意して計算 → y = " + disp(y3)] });
+  };
+
+  G.zukei_en = function (tier) {
+    if (tier === 1) {
+      var r = ri(2, 9);
+      var ans = (2 * r) + "π cm";
+      var o = choiceOpts(ans, [(r * r) + "π cm", r + "π cm", (2 * r + 2) + "π cm"]);
+      return Q({ type: "choice", text: "半径 " + r + " cm の円の、円周の長さは？", opts: o.opts, ans: o.ans,
+        exp: "円周 = 直径 × π = 2 × 半径 × π。",
+        detail: ["円周の公式: 直径 × π",
+          "直径 = 半径 × 2 = " + r + " × 2 = " + (2 * r),
+          "答えは " + ans + "（πはそのまま残す）"] });
+    }
+    if (tier === 2) {
+      var r2 = ri(2, 9);
+      var ans2 = (r2 * r2) + "π cm²";
+      var o2 = choiceOpts(ans2, [(2 * r2) + "π cm²", (r2 * 2) === (r2 * r2) ? (r2 * 4) + "π cm²" : (r2 * 2) + "π cm²", (r2 * r2 * 2) + "π cm²"]);
+      return Q({ type: "choice", text: "半径 " + r2 + " cm の円の面積は？", opts: o2.opts, ans: o2.ans,
+        exp: "円の面積 = π × 半径 × 半径（πr²）。",
+        detail: ["面積の公式: π × 半径²",
+          "半径² = " + r2 + " × " + r2 + " = " + (r2 * r2),
+          "答えは " + ans2] });
+    }
+    var p = pick([[6, 60], [6, 90], [6, 120], [4, 90], [3, 120]]);
+    var r3 = p[0], deg = p[1], coef = 2 * r3 * deg / 360;
+    var ans3 = coef + "π cm";
+    var o3 = choiceOpts(ans3, [(2 * r3) + "π cm", (coef * 2) + "π cm", (r3 * r3 * deg / 360) + "π cm"]);
+    return Q({ type: "choice", text: "半径 " + r3 + " cm、中心角 " + deg + "° のおうぎ形の弧の長さは？", opts: o3.opts, ans: o3.ans,
+      exp: "弧の長さ = 円周 × 中心角/360。",
+      detail: ["円周全体 = 2 × " + r3 + " × π = " + (2 * r3) + "π",
+        "おうぎ形は円の " + deg + "/360 = " + fr(deg, 360),
+        (2 * r3) + "π × " + fr(deg, 360) + " = " + ans3] });
+  };
+
+  G.data_katsuyo = function (tier) {
+    if (tier === 1) {
+      var mean = ri(3, 7), vals = [], sum4 = 0;
+      for (var i = 0; i < 4; i++) { var v = ri(1, 9); vals.push(v); sum4 += v; }
+      var v5 = mean * 5 - sum4;
+      while (v5 < 0 || v5 > 15) { // 範囲に収まるまで作り直し
+        vals = []; sum4 = 0;
+        for (var j = 0; j < 4; j++) { var v2 = ri(1, 9); vals.push(v2); sum4 += v2; }
+        v5 = mean * 5 - sum4;
+      }
+      vals.push(v5);
+      return Q({ type: "numeric", text: "5人の得点は " + vals.join(", ") + " 点。平均値は？", ans: String(mean),
+        exp: "平均値 = 合計 ÷ 個数。",
+        detail: ["合計を出す: " + vals.join(" + ") + " = " + mean * 5,
+          "人数でわる: " + mean * 5 + " ÷ 5",
+          "平均値は " + mean + " 点"] });
+    }
+    if (tier === 2) {
+      var set = [];
+      while (set.length < 5) { var n = ri(1, 20); if (set.indexOf(n) === -1) set.push(n); }
+      var sorted = set.slice().sort(function (a, b) { return a - b; });
+      return Q({ type: "numeric", text: "データ " + set.join(", ") + " の中央値は？", ans: String(sorted[2]),
+        exp: "中央値 = 小さい順に並べたときの真ん中の値。",
+        detail: ["小さい順に並べる: " + sorted.join(", "),
+          "5個のデータの真ん中は3番目",
+          "中央値は " + sorted[2]] });
+    }
+    var set3 = [];
+    for (var k = 0; k < 6; k++) set3.push(ri(1, 30));
+    var mx = Math.max.apply(null, set3), mn = Math.min.apply(null, set3);
+    return Q({ type: "numeric", text: "データ " + set3.join(", ") + " の範囲は？", ans: String(mx - mn),
+      exp: "範囲 = 最大値 − 最小値。",
+      detail: ["最大値は " + mx + "、最小値は " + mn,
+        "範囲 = " + mx + " − " + mn,
+        "答えは " + (mx - mn)] });
+  };
+
+  /* ===== 中3向け（中1・中2帯含む） ===== */
+  G.ichiji_hoteishiki = function (tier) {
+    var x = nz(-9, 9);
+    if (tier === 1) {
+      var a = nz(2, 9), b = a * x;
+      return Q({ type: "numeric", text: "方程式 " + a + "x = " + disp(b) + " を解こう", sub: "x の値を答えよう", ans: String(x),
+        exp: "両辺を x の係数でわる。",
+        detail: ["x に " + a + " がかかっている",
+          "両辺を " + a + " でわる: x = " + disp(b) + "÷" + a,
+          "答えは x = " + disp(x)] });
+    }
+    if (tier === 2) {
+      var a2 = nz(2, 6), b2 = nz(-9, 9), c2 = a2 * x + b2;
+      return Q({ type: "numeric", text: "方程式 " + poly([[a2, "x"], [b2, ""]]) + " = " + disp(c2) + " を解こう", sub: "x の値を答えよう", ans: String(x),
+        exp: "数の項を右辺に移項してから、係数でわる。",
+        detail: [disp(b2 > 0 ? b2 : b2) + " を右辺に移項（符号が変わる）: " + a2 + "x = " + disp(c2) + (b2 > 0 ? M + b2 : "+" + (-b2)),
+          a2 + "x = " + disp(c2 - b2),
+          "両辺を " + a2 + " でわって x = " + disp(x)] });
+    }
+    var a3 = nz(3, 7), c3 = nz(-4, 4); if (a3 === c3) c3 -= 1;
+    var b3 = nz(-9, 9), d3 = (a3 - c3) * x + b3;
+    return Q({ type: "numeric", text: "方程式 " + poly([[a3, "x"], [b3, ""]]) + " = " + poly([[c3, "x"], [d3, ""]]) + " を解こう", sub: "x の値を答えよう", ans: String(x),
+      exp: "x の項は左辺に、数の項は右辺に集める。",
+      detail: ["x の項を左へ、数を右へ移項する（移項すると符号が変わる）",
+        poly([[a3 - c3, "x"]]) + " = " + disp(d3 - b3),
+        "両辺を " + (a3 - c3) + " でわって x = " + disp(x)] });
+  };
+
+  G.renritsu = function (tier) {
+    var x = nz(-5, 5), y = nz(-5, 5);
+    var fmt = function (a, b, c) { return poly([[a, "x"], [b, "y"]]) + " = " + disp(c); };
+    var mk = function (a1, b1, a2, b2) {
+      var c1 = a1 * x + b1 * y, c2 = a2 * x + b2 * y;
+      var correct = "x = " + disp(x) + ", y = " + disp(y);
+      var o = choiceOpts(correct, ["x = " + disp(y) + ", y = " + disp(x), "x = " + disp(-x) + ", y = " + disp(y), "x = " + disp(x) + ", y = " + disp(-y)]);
+      return { eq1: fmt(a1, b1, c1), eq2: fmt(a2, b2, c2), o: o, c1: c1, c2: c2, a1: a1, b1: b1, a2: a2, b2: b2 };
+    };
+    var m, expl;
+    if (tier === 1) {
+      m = mk(1, 1, 1, -1);
+      expl = ["2つの式をたすと y が消える: 2x = " + disp(m.c1 + m.c2),
+        "x = " + disp(x),
+        "x を1つ目の式に代入して y = " + disp(y)];
+    } else if (tier === 2) {
+      m = mk(2, 1, 1, -1);
+      expl = ["2つの式をたすと y が消える（+y と −y）: 3x = " + disp(m.c1 + m.c2),
+        "x = " + disp(x),
+        "x を代入して y = " + disp(y)];
+    } else {
+      m = mk(2, 3, 3, -2);
+      expl = ["上の式×2、下の式×3 にすると y の係数が +6 と −6 になる",
+        "たし合わせると y が消えて 13x = " + disp(2 * m.c1 + 3 * m.c2),
+        "x = " + disp(x) + "。代入して y = " + disp(y)];
+    }
+    return Q({ type: "choice", oneCol: true, text: "連立方程式を解こう", sub: m.eq1 + "　,　" + m.eq2,
+      opts: m.o.opts, ans: m.o.ans,
+      exp: "たすかひくかで、1つの文字を消す（加減法）。", detail: expl });
+  };
+
+  G.ichiji_kansu = function (tier) {
+    var a = nz(-4, 4), b = nz(-8, 8);
+    var eq = "y = " + poly([[a, "x"], [b, ""]]);
+    if (tier === 1) {
+      var o = choiceOpts(eq, ["y = " + poly([[b, "x"], [a, ""]]), "y = " + poly([[-a, "x"], [b, ""]]), "y = " + poly([[a, "x"], [-b, ""]])]);
+      return Q({ type: "choice", oneCol: true, text: "変化の割合が " + disp(a) + "、切片が " + disp(b) + " の一次関数の式は？",
+        opts: o.opts, ans: o.ans,
+        exp: "一次関数は y = ax + b。a が変化の割合、b が切片。",
+        detail: ["y = ax + b の形に当てはめる",
+          "a（変化の割合・傾き）= " + disp(a),
+          "b（切片・y軸との交点）= " + disp(b),
+          "答えは " + eq] });
+    }
+    var p = nz(-4, 4), q = a * p + b;
+    if (tier === 2) {
+      var o2 = choiceOpts(eq, ["y = " + poly([[a, "x"], [q, ""]]), "y = " + poly([[-a, "x"], [b, ""]]), "y = " + poly([[a, "x"], [b + a, ""]])]);
+      return Q({ type: "choice", oneCol: true, text: "傾きが " + disp(a) + " で、点（" + disp(p) + ", " + disp(q) + "）を通る直線の式は？",
+        opts: o2.opts, ans: o2.ans,
+        exp: "y = ax + b に傾きと点の座標を代入して b を求める。",
+        detail: ["傾き " + disp(a) + " → y = " + poly([[a, "x"]]) + " + b とおく",
+          "点を代入: " + disp(q) + " = " + disp(a) + "×" + wrapNeg(p) + " + b",
+          "b = " + disp(q) + M + "（" + disp(a * p) + "）= " + disp(b),
+          "答えは " + eq] });
+    }
+    var p2 = p + pick([1, 2]), q2 = a * p2 + b;
+    var o3 = choiceOpts(eq, ["y = " + poly([[-a, "x"], [b, ""]]), "y = " + poly([[a, "x"], [q, ""]]), "y = " + poly([[a + 1, "x"], [b, ""]])]);
+    return Q({ type: "choice", oneCol: true, text: "2点（" + disp(p) + ", " + disp(q) + "）,（" + disp(p2) + ", " + disp(q2) + "）を通る直線の式は？",
+      opts: o3.opts, ans: o3.ans,
+      exp: "傾き = y の増加量 ÷ x の増加量。",
+      detail: ["傾き a = （" + disp(q2) + M + wrapNeg(q) + "）÷（" + disp(p2) + M + wrapNeg(p) + "）= " + disp(a),
+        "y = " + poly([[a, "x"]]) + " + b に点（" + disp(p) + ", " + disp(q) + "）を代入",
+        "b = " + disp(b),
+        "答えは " + eq] });
+  };
+
+  G.tenkai = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 5), b = ri(2, 6), c = ri(1, 8);
+      var ans = poly([[a * b, "x²"], [-a * c, "x"]]);
+      var o = choiceOpts(ans, [poly([[a * b, "x²"], [a * c, "x"]]), poly([[a * b, "x"], [-a * c, ""]]), poly([[a + b, "x²"], [-a * c, "x"]])]);
+      return Q({ type: "choice", text: a + "x（" + poly([[b, "x"], [-c, ""]]) + "） を展開しよう", opts: o.opts, ans: o.ans,
+        exp: "単項式を、かっこの中の各項にかける。",
+        detail: [a + "x × " + b + "x = " + a * b + "x²（x×x=x²）",
+          a + "x ×（" + M + c + "）= " + M + a * c + "x",
+          "答えは " + ans] });
+    }
+    if (tier === 2) {
+      var p = nz(-6, 6), q = nz(-6, 6);
+      var ans2 = poly([[1, "x²"], [p + q, "x"], [p * q, ""]]);
+      var o2 = choiceOpts(ans2, [poly([[1, "x²"], [p * q, "x"], [p + q, ""]]), poly([[1, "x²"], [p - q, "x"], [p * q, ""]]), poly([[1, "x²"], [p + q, "x"], [-p * q, ""]])]);
+      return Q({ type: "choice", text: "（x " + (p < 0 ? M + " " + (-p) : "+ " + p) + "）（x " + (q < 0 ? M + " " + (-q) : "+ " + q) + "） を展開しよう",
+        opts: o2.opts, ans: o2.ans,
+        exp: "(x+a)(x+b) = x² + (a+b)x + ab。",
+        detail: ["公式 (x+a)(x+b) = x²+(a+b)x+ab を使う",
+          "a+b = " + wrapNeg(p) + "+" + wrapNeg(q) + " = " + disp(p + q),
+          "ab = " + wrapNeg(p) + "×" + wrapNeg(q) + " = " + disp(p * q),
+          "答えは " + ans2] });
+    }
+    var a3 = ri(1, 7);
+    if (Math.random() < 0.5) {
+      var sgn3 = sgn();
+      var ans3 = poly([[1, "x²"], [2 * a3 * sgn3, "x"], [a3 * a3, ""]]);
+      var o3 = choiceOpts(ans3, [poly([[1, "x²"], [a3 * a3, ""]]), poly([[1, "x²"], [2 * a3 * sgn3, "x"], [2 * a3, ""]]), poly([[1, "x²"], [a3 * sgn3, "x"], [a3 * a3, ""]])]);
+      return Q({ type: "choice", text: "（x " + (sgn3 < 0 ? M : "+") + " " + a3 + "）² を展開しよう", opts: o3.opts, ans: o3.ans,
+        exp: "(x±a)² = x² ± 2ax + a²。真ん中の項を忘れない。",
+        detail: ["公式 (x" + (sgn3 < 0 ? M : "+") + "a)² = x²" + (sgn3 < 0 ? M : "+") + "2ax+a²",
+          "2ax = 2×" + a3 + "×x = " + 2 * a3 + "x",
+          "a² = " + a3 + "² = " + a3 * a3,
+          "答えは " + ans3] });
+    }
+    var ansW = poly([[1, "x²"], [-a3 * a3, ""]]);
+    var oW = choiceOpts(ansW, [poly([[1, "x²"], [a3 * a3, ""]]), poly([[1, "x²"], [-2 * a3, "x"], [-a3 * a3, ""]]), poly([[1, "x²"], [2 * a3, "x"], [a3 * a3, ""]])]);
+    return Q({ type: "choice", text: "（x + " + a3 + "）（x " + M + " " + a3 + "） を展開しよう", opts: oW.opts, ans: oW.ans,
+      exp: "和と差の積は「2乗の差」。(a+b)(a−b) = a²−b²。",
+      detail: ["同じ数の +と− のペア → 公式 (x+a)(x−a) = x²−a²",
+        "a² = " + a3 + "² = " + a3 * a3,
+        "真ん中の項は消える",
+        "答えは " + ansW] });
+  };
+
+  G.insu_bunkai = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 4), b = ri(2, 6), c = ri(1, 7);
+      var expr = poly([[a * b, "x²"], [a * c, "x"]]);
+      var ans = a + "x（" + poly([[b, "x"], [c, ""]]) + "）";
+      var o = choiceOpts(ans, [a + "（" + poly([[b, "x²"], [c, "x"]]) + "）", "x（" + poly([[a * b, "x"], [a * c, ""]]) + "）", a + "x（" + poly([[b, "x"], [-c, ""]]) + "）"]);
+      return Q({ type: "choice", text: expr + " を因数分解しよう", opts: o.opts, ans: o.ans,
+        exp: "まず共通因数をくくり出す。",
+        detail: ["両方の項に共通なもの: " + a + "x",
+          a * b + "x² = " + a + "x × " + b + "x、" + a * c + "x = " + a + "x × " + c,
+          "答えは " + ans + "（共通因数は残さず全部くくる）"] });
+    }
+    if (tier === 2) {
+      var p = nz(-6, 6), q = nz(-6, 6);
+      while (p === -q) q = nz(-6, 6);
+      var expr2 = poly([[1, "x²"], [p + q, "x"], [p * q, ""]]);
+      var f = function (r) { return "（x " + (r < 0 ? M + " " + (-r) : "+ " + r) + "）"; };
+      var ans2 = p <= q ? f(p) + f(q) : f(q) + f(p);
+      var o2 = choiceOpts(ans2, [f(-p) + f(-q), f(p) + f(-q), f(p + q) + f(p * q === p + q ? p * q + 1 : p * q)]);
+      return Q({ type: "choice", text: expr2 + " を因数分解しよう", opts: o2.opts, ans: o2.ans,
+        exp: "かけて ab、たして a+b になる2数を探す。",
+        detail: ["かけて " + disp(p * q) + "、たして " + disp(p + q) + " になる2つの数を探す",
+          wrapNeg(p) + " と " + wrapNeg(q) + " が見つかる（" + wrapNeg(p) + "×" + wrapNeg(q) + "=" + disp(p * q) + "、" + wrapNeg(p) + "+" + wrapNeg(q) + "=" + disp(p + q) + "）",
+          "答えは " + ans2] });
+    }
+    var a3 = ri(2, 8);
+    if (Math.random() < 0.5) {
+      var expr3 = poly([[1, "x²"], [-a3 * a3, ""]]);
+      var ans3 = "（x + " + a3 + "）（x " + M + " " + a3 + "）";
+      var o3 = choiceOpts(ans3, ["（x " + M + " " + a3 + "）²", "（x + " + a3 + "）²", "x（x " + M + " " + a3 + "）"]);
+      return Q({ type: "choice", text: expr3 + " を因数分解しよう", opts: o3.opts, ans: o3.ans,
+        exp: "2乗の差は和と差の積に分解できる。a²−b² = (a+b)(a−b)。",
+        detail: [disp(a3 * a3) + " = " + a3 + "² なので「2乗の差」の形",
+          "公式 x²−a² = (x+a)(x−a)",
+          "答えは " + ans3] });
+    }
+    var s = sgn();
+    var expr4 = poly([[1, "x²"], [2 * a3 * s, "x"], [a3 * a3, ""]]);
+    var ans4 = "（x " + (s < 0 ? M : "+") + " " + a3 + "）²";
+    var o4 = choiceOpts(ans4, ["（x " + (s < 0 ? "+" : M) + " " + a3 + "）²", "（x + " + a3 + "）（x " + M + " " + a3 + "）", "（x " + (s < 0 ? M : "+") + " " + 2 * a3 + "）²"]);
+    return Q({ type: "choice", text: expr4 + " を因数分解しよう", opts: o4.opts, ans: o4.ans,
+      exp: "x² ± 2ax + a² = (x±a)² の形（完全平方）。",
+      detail: ["定数 " + a3 * a3 + " = " + a3 + "²、真ん中 " + 2 * a3 + " = 2×" + a3 + " → 完全平方の形",
+        "符号は真ん中の項と同じ " + (s < 0 ? "−" : "+"),
+        "答えは " + ans4] });
+  };
+
+  G.heihokon = function (tier) {
+    if (tier === 1) {
+      var n = ri(4, 15);
+      return Q({ type: "numeric", text: "√" + (n * n) + " はいくつ？", ans: String(n),
+        exp: "√a² = a。2乗するとその数になる正の数を探す。",
+        detail: ["√" + (n * n) + " は「2乗すると " + (n * n) + " になる正の数」",
+          n + "×" + n + " = " + (n * n),
+          "答えは " + n + "（√の答えは正の方だけ）"] });
+    }
+    if (tier === 2) {
+      var k = pick([2, 3, 5]), m = pick([2, 3, 4]);
+      var inside = k * m * m;
+      var ans2 = m + "√" + k;
+      var o2 = choiceOpts(ans2, [k + "√" + m, "√" + inside === ans2 ? m * k + "√" + k : "√" + inside, String(m * k), m + "√" + (k * m)]);
+      return Q({ type: "choice", text: "√" + inside + " を簡単にしよう", opts: o2.opts, ans: o2.ans,
+        exp: "中の数を「2乗×残り」に分けて、2乗を外に出す。",
+        detail: [inside + " = " + (m * m) + " × " + k + " = " + m + "² × " + k,
+          "2乗の部分は√の外に出せる: √" + inside + " = " + m + "√" + k,
+          "答えは " + ans2] });
+    }
+    var k3 = pick([2, 3, 5]), a4 = ri(1, 5), b4 = ri(1, 5);
+    var ans3 = (a4 + b4) + "√" + k3;
+    var o3 = choiceOpts(ans3, [(a4 + b4) + "√" + (2 * k3), (a4 * b4) + "√" + k3, "√" + ((a4 + b4) * (a4 + b4) * k3)]);
+    return Q({ type: "choice", text: a4 + "√" + k3 + " + " + b4 + "√" + k3 + " を計算しよう", opts: o3.opts, ans: o3.ans,
+      exp: "√の中が同じなら、文字式と同じように係数をたす。",
+      detail: ["√" + k3 + " を文字のように考える（" + a4 + "x + " + b4 + "x と同じ要領）",
+        "係数をたす: " + a4 + " + " + b4 + " = " + (a4 + b4),
+        "答えは " + ans3 + "（√の中の数はたさない！）"] });
+  };
+
+  G.niji_hoteishiki = function (tier) {
+    if (tier === 1) {
+      var a = ri(2, 9);
+      var ans = "x = ±" + a;
+      var o = choiceOpts(ans, ["x = " + a, "x = " + M + a, "x = ±" + (a * a)]);
+      return Q({ type: "choice", text: "二次方程式 x² = " + (a * a) + " を解こう", opts: o.opts, ans: o.ans,
+        exp: "2乗して " + (a * a) + " になる数は + と − の2つある。",
+        detail: ["x は「2乗すると " + (a * a) + " になる数」",
+          a + "² = " + (a * a) + "、（" + M + a + "）² = " + (a * a) + " の両方が成り立つ",
+          "答えは x = ±" + a + "（2つセットで答える）"] });
+    }
+    if (tier === 2) {
+      var p = nz(-6, 6), q2 = nz(-6, 6);
+      while (p === q2) q2 = nz(-6, 6);
+      var expr = poly([[1, "x²"], [p + q2, "x"], [p * q2, ""]]);
+      var ans2 = "x = " + disp(-p) + ", x = " + disp(-q2);
+      var o2 = choiceOpts(ans2, ["x = " + disp(p) + ", x = " + disp(q2), "x = " + disp(-p * q2) + ", x = " + disp(-p - q2), "x = " + disp(p) + ", x = " + disp(-q2)]);
+      return Q({ type: "choice", oneCol: true, text: "二次方程式 " + expr + " = 0 を解こう", opts: o2.opts, ans: o2.ans,
+        exp: "左辺を因数分解して、それぞれのかっこ = 0 とする。",
+        detail: ["因数分解: （x " + (p < 0 ? M + " " + (-p) : "+ " + p) + "）（x " + (q2 < 0 ? M + " " + (-q2) : "+ " + q2) + "）= 0",
+          "かけて0になるのは、どちらかが0のとき",
+          "x " + (p < 0 ? M + " " + (-p) : "+ " + p) + " = 0 または x " + (q2 < 0 ? M + " " + (-q2) : "+ " + q2) + " = 0",
+          "答えは " + ans2 + "（符号が逆になることに注意）"] });
+    }
+    var pair = pick([[3, 1], [5, 5], [1, -1], [3, -1], [5, 3], [7, 3]]);
+    var b3 = pair[0], c3 = pair[1], D = b3 * b3 - 4 * c3;
+    var ans3 = "x = (" + M + b3 + " ± √" + D + ") / 2";
+    var o3 = choiceOpts(ans3, ["x = (" + b3 + " ± √" + D + ") / 2", "x = (" + M + b3 + " ± √" + D + ") / 4", "x = (" + M + b3 + " ± " + D + ") / 2"]);
+    return Q({ type: "choice", oneCol: true, text: "二次方程式 " + poly([[1, "x²"], [b3, "x"], [c3, ""]]) + " = 0 を解の公式で解こう", opts: o3.opts, ans: o3.ans,
+      exp: "解の公式: x = (−b ± √(b²−4ac)) / 2a。",
+      detail: ["a = 1, b = " + b3 + ", c = " + disp(c3) + " を解の公式に代入",
+        "b² − 4ac = " + b3 + "² − 4×1×" + wrapNeg(c3) + " = " + D,
+        "x = (" + M + b3 + " ± √" + D + ") / 2"] });
+  };
+
+  G.niji_kansu = function (tier) {
+    if (tier === 1) {
+      var x = ri(2, 3), a = nz(-3, 3), y = a * x * x;
+      var ans = "y = " + poly([[a, "x²"]]);
+      var o = choiceOpts(ans, ["y = " + poly([[a + 1, "x²"]]), "y = " + poly([[-a, "x²"]]), "y = " + poly([[y, "x²"]])]);
+      return Q({ type: "choice", oneCol: true, text: "y は x² に比例し、x = " + x + " のとき y = " + disp(y) + "。y を x の式で表そう",
+        opts: o.opts, ans: o.ans,
+        exp: "y = ax² とおいて、a を求める。",
+        detail: ["y = ax² の形。x = " + x + ", y = " + disp(y) + " を代入",
+          disp(y) + " = a × " + x + "² = " + (x * x) + "a",
+          "a = " + disp(y) + " ÷ " + (x * x) + " = " + disp(a),
+          "答えは " + ans] });
+    }
+    if (tier === 2) {
+      var a2 = nz(-3, 3), x2 = nz(-4, 4), y2 = a2 * x2 * x2;
+      return Q({ type: "numeric", text: "y = " + poly([[a2, "x²"]]) + " で、x = " + disp(x2) + " のときの y の値は？", ans: String(y2),
+        exp: "x を2乗してから a をかける。",
+        detail: ["x² を先に計算: （" + disp(x2) + "）² = " + (x2 * x2),
+          "y = " + disp(a2) + " × " + (x2 * x2),
+          "答えは y = " + disp(y2)] });
+    }
+    var a3 = nz(-3, 3), p3 = ri(1, 3), q3 = p3 + ri(1, 3);
+    var rate = a3 * (p3 + q3);
+    return Q({ type: "numeric", text: "y = " + poly([[a3, "x²"]]) + " で、x が " + p3 + " から " + q3 + " まで増えるときの変化の割合は？", ans: String(rate),
+      exp: "y = ax² の変化の割合は a × (はじめのx + おわりのx)。",
+      detail: ["便利な公式: 変化の割合 = a（p + q）",
+        "a = " + disp(a3) + "、p + q = " + p3 + " + " + q3 + " = " + (p3 + q3),
+        disp(a3) + " × " + (p3 + q3) + " = " + disp(rate),
+        "（一次関数とちがい、変化の割合は一定ではない）"] });
+  };
+
+  G.sanheihou = function (tier) {
+    var tri = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17]]);
+    if (tier === 1) {
+      return Q({ type: "numeric", text: "直角をはさむ2辺が " + tri[0] + " cm と " + tri[1] + " cm の直角三角形。斜辺の長さは？（cm）", ans: String(tri[2]),
+        exp: "三平方の定理: a² + b² = c²（cは斜辺）。",
+        detail: ["斜辺² = " + tri[0] + "² + " + tri[1] + "² = " + (tri[0] * tri[0]) + " + " + (tri[1] * tri[1]) + " = " + (tri[2] * tri[2]),
+          "斜辺 = √" + (tri[2] * tri[2]) + " = " + tri[2],
+          "答えは " + tri[2] + " cm"] });
+    }
+    if (tier === 2) {
+      return Q({ type: "numeric", text: "斜辺が " + tri[2] + " cm、他の1辺が " + tri[0] + " cm の直角三角形。残りの辺の長さは？（cm）", ans: String(tri[1]),
+        exp: "残りの辺² = 斜辺² − もう1辺²。",
+        detail: ["残りの辺² = " + tri[2] + "² − " + tri[0] + "² = " + (tri[2] * tri[2]) + " − " + (tri[0] * tri[0]) + " = " + (tri[1] * tri[1]),
+          "残りの辺 = √" + (tri[1] * tri[1]) + " = " + tri[1],
+          "答えは " + tri[1] + " cm"] });
+    }
+    var s = ri(2, 9);
+    var ans3 = s + "√2 cm";
+    var o3 = choiceOpts(ans3, [s + "√3 cm", (2 * s) + " cm", (s * s) + "√2 cm"]);
+    return Q({ type: "choice", text: "1辺が " + s + " cm の正方形の対角線の長さは？", opts: o3.opts, ans: o3.ans,
+      exp: "正方形の対角線 = 1辺 × √2。",
+      detail: ["対角線² = " + s + "² + " + s + "² = " + (2 * s * s),
+        "対角線 = √" + (2 * s * s) + " = √(" + s + "² × 2) = " + s + "√2",
+        "答えは " + ans3] });
+  };
+
+  G.hyohon = function (tier) {
+    var take = tier === 1 ? 30 : tier === 2 ? 50 : 40;
+    var ratio = tier === 1 ? 5 : tier === 2 ? 10 : 8;
+    var hit = take / ratio * (tier === 3 ? 2 : 1);
+    var total = ri(3, 8) * 100;
+    var ans = total / ratio * (tier === 3 ? 2 : 1);
+    return Q({ type: "numeric", text: "箱の中の玉から " + take + " 個を取り出したら、赤玉が " + hit + " 個だった。箱全体が " + total + " 個なら、赤玉はおよそ何個と考えられる？", ans: String(ans),
+      exp: "標本の割合が、全体（母集団）でも同じと考える。",
+      detail: ["取り出した中の赤玉の割合: " + hit + "/" + take + " = " + fr(hit, take),
+        "全体でも同じ割合と考える",
+        total + " × " + fr(hit, take) + " = " + ans,
+        "答えは およそ " + ans + " 個"] });
+  };
+
+  // 中3の中1帯: 正負の四則（加減・乗除・混合をランダムで）
+  G.seifu_shisoku = function (tier) {
+    var r = Math.random();
+    if (r < 0.4) return G.seifu_kagen(tier);
+    if (r < 0.75) return G.seifu_jojo(tier);
+    return G.shisoku(tier);
+  };
+
+  global.MATHGEN = {
+    gen: function (id, tier) {
+      if (!G[id]) throw new Error("unknown generator: " + id);
+      var t = Math.max(1, Math.min(3, tier || 1));
+      return G[id](t);
+    },
+    _list: Object.keys(G)
+  };
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* ===== 中1プロフィール（ダンスステージ） ===== */
+(function (global) {
+  "use strict";
+
+  // 語彙は光村図書「Here We Go!」（宇治市=山城採択地区）中1の題材に合わせている
+  var VOCAB = [
+    ["Monday", "月曜日"], ["Tuesday", "火曜日"], ["Wednesday", "水曜日"], ["Thursday", "木曜日"],
+    ["Friday", "金曜日"], ["Saturday", "土曜日"], ["Sunday", "日曜日"], ["today", "今日"],
+    ["science", "理科"], ["P.E.", "体育"], ["art", "美術"], ["Japanese", "国語・日本語"],
+    ["social studies", "社会科"], ["English", "英語"], ["favorite", "お気に入りの"], ["subject", "教科"],
+    ["club", "部活・クラブ"], ["practice", "練習する"], ["team", "チーム"], ["festival", "祭り"],
+    ["school", "学校"], ["teacher", "先生"], ["student", "生徒"], ["friend", "友だち"],
+    ["family", "家族"], ["father", "父"], ["mother", "母"], ["brother", "兄・弟"],
+    ["sister", "姉・妹"], ["morning", "朝"], ["afternoon", "午後"], ["night", "夜"],
+    ["book", "本"], ["pen", "ペン"], ["desk", "つくえ"], ["chair", "いす"],
+    ["bag", "かばん"], ["ball", "ボール"], ["dog", "犬"], ["cat", "ねこ"],
+    ["bird", "鳥"], ["fish", "魚"], ["apple", "りんご"], ["egg", "たまご"],
+    ["milk", "牛乳"], ["water", "水"], ["breakfast", "朝食"], ["lunch", "昼食"],
+    ["dinner", "夕食"], ["house", "家"], ["room", "部屋"], ["park", "公園"],
+    ["library", "図書館"], ["music", "音楽"], ["math", "数学"], ["soccer", "サッカー"],
+    ["baseball", "野球"], ["volleyball", "バレーボール"], ["Japan", "日本"], ["dance", "おどる・ダンス"],
+    ["like", "〜が好きだ"], ["play", "（スポーツを）する・演奏する"], ["study", "勉強する"], ["run", "走る"],
+    ["swim", "泳ぐ"], ["sing", "歌う"], ["walk", "歩く"], ["eat", "食べる"],
+    ["drink", "飲む"], ["speak", "話す"], ["read", "読む"], ["write", "書く"],
+    ["watch", "（テレビなどを）見る"], ["listen", "聞く"], ["new", "新しい"], ["old", "古い"],
+    ["big", "大きい"], ["small", "小さい"], ["happy", "うれしい"], ["busy", "いそがしい"],
+    ["want", "ほしい・〜したい"], ["know", "知っている"], ["live", "住む"], ["come", "来る"],
+    ["go", "行く"], ["make", "作る"], ["take", "取る・（写真を）とる"], ["get", "手に入れる"],
+    ["see", "見える・会う"], ["meet", "会う"], ["use", "使う"], ["help", "手伝う"],
+    ["open", "開ける"], ["close", "閉める"], ["stand", "立つ"], ["sit", "すわる"],
+    ["teach", "教える"], ["learn", "習う"], ["cook", "料理する"], ["clean", "そうじする"]
+  ];
+
+  var GRAMMAR = [
+    // t1: be動詞
+    { t: 1, q: "I ___ a student.", opts: ["am", "is", "are", "do"], a: 0, exp: "主語が I のとき be動詞は am。" },
+    { t: 1, q: "You ___ my friend.", opts: ["are", "am", "is", "does"], a: 0, exp: "主語が You のとき be動詞は are。" },
+    { t: 1, q: "She ___ a teacher.", opts: ["is", "am", "are", "do"], a: 0, exp: "主語が she/he/it（3人称単数）のとき be動詞は is。" },
+    { t: 1, q: "This ___ my bag.", opts: ["is", "am", "are", "be"], a: 0, exp: "this や it も is を使う仲間。" },
+    { t: 1, q: "Ken and Yumi ___ students.", opts: ["are", "is", "am", "be"], a: 0, exp: "主語が2人以上（複数）のとき be動詞は are。" },
+    { t: 1, q: "I ___ from Kyoto.", opts: ["am", "is", "are", "do"], a: 0, exp: "「〜出身です」は be動詞 + from。I なので am。" },
+    { t: 1, q: "「わたしは13歳です」= I ___ thirteen.", opts: ["am", "is", "have", "do"], a: 0, exp: "年齢も be動詞で表す。I am thirteen." },
+    { t: 1, q: "It ___ sunny today.", opts: ["is", "am", "are", "do"], a: 0, exp: "天気を表す it は is を使う。" },
+    // t2: be動詞の否定・疑問、一般動詞
+    { t: 2, q: "I ___ like math.（数学が好きではない）", opts: ["don't", "am not", "not", "doesn't"], a: 0, exp: "一般動詞（like）の否定は don't を前に置く。" },
+    { t: 2, q: "___ you play soccer?", opts: ["Do", "Are", "Is", "Does"], a: 0, exp: "一般動詞の疑問文は Do で始める。" },
+    { t: 2, q: "___ you a tennis fan?", opts: ["Are", "Do", "Is", "Am"], a: 0, exp: "be動詞の文の疑問文は be動詞で始める。" },
+    { t: 2, q: "She is ___ a student.（生徒ではない）", opts: ["not", "don't", "no", "isn't"], a: 0, exp: "be動詞の否定は be動詞のあとに not。" },
+    { t: 2, q: "I ___ TV every day.", opts: ["watch", "watches", "am watch", "watching"], a: 0, exp: "主語が I の一般動詞はそのままの形。" },
+    { t: 2, q: "We ___ English at school.", opts: ["study", "studies", "are study", "is study"], a: 0, exp: "一般動詞の文に be動詞は入れない。" },
+    { t: 2, q: "「わたしは犬を飼っていません」= I ___ have a dog.", opts: ["don't", "am not", "not", "no"], a: 0, exp: "have は一般動詞なので don't で否定。" },
+    { t: 2, q: "___ they from Osaka? — Yes, they are.", opts: ["Are", "Do", "Is", "Am"], a: 0, exp: "答えが they are なので be動詞の疑問文。" },
+    // t3: can・命令文・混合
+    { t: 3, q: "I ___ swim fast.（速く泳げる）", opts: ["can", "am", "do", "is"], a: 0, exp: "「〜できる」は can + 動詞の原形。" },
+    { t: 3, q: "She can ___ the piano.", opts: ["play", "plays", "playing", "played"], a: 0, exp: "can のあとの動詞はいつも原形。plays にしない。" },
+    { t: 3, q: "___ you dance? — Yes, I can.", opts: ["Can", "Do", "Are", "Is"], a: 0, exp: "can の疑問文は Can で始める。" },
+    { t: 3, q: "I ___ play the guitar.（ひけない）", opts: ["can't", "don't can", "am not", "no"], a: 0, exp: "can の否定は can't（cannot）。" },
+    { t: 3, q: "___ quiet, please.（静かにしてください）", opts: ["Be", "Are", "Is", "Do"], a: 0, exp: "be動詞の命令文は Be で始める。" },
+    { t: 3, q: "___ your homework every day.（宿題をしなさい）", opts: ["Do", "Does", "Are", "Be"], a: 0, exp: "一般動詞の命令文は動詞の原形で始める。" },
+    { t: 3, q: "How many pens ___ you have?", opts: ["do", "are", "can", "is"], a: 0, exp: "How many のあとは一般動詞の疑問文の形（do you have）。" },
+    { t: 3, q: "My mother can ___ well.", opts: ["sing", "sings", "singing", "is sing"], a: 0, exp: "can + 原形。主語が3人称でも sing のまま。" }
+  ];
+
+  var GRAMMAR2 = [ // 三単現・現在進行形・過去形（中1後半の範囲）
+    { t: 1, q: "She ___ tennis every day.", opts: ["plays", "play", "playing", "played"], a: 0, exp: "主語が3人称単数で現在の文は動詞に s（三単現）。" },
+    { t: 1, q: "My father ___ in Osaka.", opts: ["works", "work", "working", "is work"], a: 0, exp: "主語 My father は3人称単数 → works。" },
+    { t: 1, q: "Ken ___ a dog.", opts: ["has", "have", "haves", "having"], a: 0, exp: "have の三単現は has（特別な形）。" },
+    { t: 1, q: "___ she like music? — Yes, she does.", opts: ["Does", "Do", "Is", "Can"], a: 0, exp: "三単現の疑問文は Does で始める。動詞は原形に戻る。" },
+    { t: 2, q: "I am ___ TV now.", opts: ["watching", "watch", "watched", "watches"], a: 0, exp: "「今〜している」は現在進行形 be動詞 + 〜ing。" },
+    { t: 2, q: "She is ___ lunch now.", opts: ["making", "make", "makes", "made"], a: 0, exp: "make → making（e をとって ing）。" },
+    { t: 2, q: "They are ___ in the park.", opts: ["running", "run", "runing", "runs"], a: 0, exp: "run → running（n を重ねて ing）。" },
+    { t: 2, q: "___ you studying now?", opts: ["Are", "Do", "Does", "Did"], a: 0, exp: "進行形の疑問文は be動詞で始める。" },
+    { t: 3, q: "I ___ soccer yesterday.", opts: ["played", "play", "plays", "playing"], a: 0, exp: "yesterday があるので過去形 played。" },
+    { t: 3, q: "She ___ to school yesterday.", opts: ["went", "goes", "go", "going"], a: 0, exp: "go の過去形は went（不規則動詞）。" },
+    { t: 3, q: "I ___ a movie last night.", opts: ["watched", "watch", "watching", "watches"], a: 0, exp: "last night → 過去形 watched。" },
+    { t: 3, q: "___ you play tennis yesterday?", opts: ["Did", "Do", "Does", "Are"], a: 0, exp: "過去の疑問文は Did + 主語 + 動詞の原形。" }
+  ];
+
+  var SORT = [
+    { t: 1, jp: "わたしは生徒です。", tokens: ["I", "am", "a", "student."], exp: "主語 + be動詞 + 名詞 の順。" },
+    { t: 1, jp: "あなたは親切です。", tokens: ["You", "are", "kind."], exp: "主語 You + are + 形容詞。" },
+    { t: 1, jp: "これはわたしのかばんです。", tokens: ["This", "is", "my", "bag."], exp: "This is + 持ち主 + もの。" },
+    { t: 1, jp: "わたしは京都出身です。", tokens: ["I", "am", "from", "Kyoto."], exp: "出身は be動詞 + from + 地名。" },
+    { t: 1, jp: "ケンはわたしの友だちです。", tokens: ["Ken", "is", "my", "friend."], exp: "主語 Ken（3人称単数）+ is。" },
+    { t: 2, jp: "わたしはバレーボールが好きです。", tokens: ["I", "like", "volleyball."], exp: "主語 + 一般動詞 + 目的語。" },
+    { t: 2, jp: "わたしは毎日英語を勉強します。", tokens: ["I", "study", "English", "every", "day."], exp: "「毎日」every day は文の最後。" },
+    { t: 2, jp: "あなたはサッカーをしますか。", tokens: ["Do", "you", "play", "soccer?"], exp: "一般動詞の疑問文は Do + 主語 + 動詞。" },
+    { t: 2, jp: "わたしは牛乳を飲みません。", tokens: ["I", "don't", "drink", "milk."], exp: "否定は don't を動詞の前に。" },
+    { t: 2, jp: "あなたは音楽が好きですか。", tokens: ["Do", "you", "like", "music?"], exp: "Do で始めて主語 + 動詞の順。" },
+    { t: 3, jp: "わたしは速く走ることができます。", tokens: ["I", "can", "run", "fast."], exp: "can + 動詞の原形 + 副詞。" },
+    { t: 3, jp: "あなたはピアノをひけますか。", tokens: ["Can", "you", "play", "the", "piano?"], exp: "can の疑問文は Can + 主語 + 動詞。" },
+    { t: 3, jp: "わたしの姉は上手に歌えます。", tokens: ["My", "sister", "can", "sing", "well."], exp: "主語が My sister でも can + 原形。" },
+    { t: 3, jp: "ここで写真をとってはいけません。", tokens: ["Don't", "take", "pictures", "here."], exp: "「〜してはいけない」は Don't + 動詞の原形。" },
+    { t: 3, jp: "わたしは英語を上手に話せません。", tokens: ["I", "can't", "speak", "English", "well."], exp: "can't + 原形。well は最後。" },
+    { t: 2, jp: "彼は毎日サッカーをします。", tokens: ["He", "plays", "soccer", "every", "day."], exp: "三単現 plays。every day は文末。" },
+    { t: 2, jp: "わたしは今、本を読んでいます。", tokens: ["I", "am", "reading", "a", "book", "now."], exp: "現在進行形 am + 〜ing。" },
+    { t: 3, jp: "彼女は昨日、学校に行きました。", tokens: ["She", "went", "to", "school", "yesterday."], exp: "過去形 went。yesterday は文末。" },
+    { t: 3, jp: "あなたは今、テレビを見ていますか。", tokens: ["Are", "you", "watching", "TV", "now?"], exp: "進行形の疑問文は be動詞が先頭。" }
+  ];
+
+  global.PROFILE = {
+    id: "chu1",
+    theme: "dance",
+    appTitle: "ダンスステージ — 中1 数学・英語",
+    storageKey: "manabi-chu1-v1",
+    texts: {
+      greet: "おかえり、ダンサー！",
+      streakWord: "日連続レッスン",
+      comboWord: "ラリー",
+      crown: "🎉",
+      victory: "ステージ大成功！",
+      vsub: "観客が沸いている！",
+      mapsub: "ゲージを全部埋めればテストは怖くない",
+      titles: ["入門生", "スタジオ生", "バックダンサー", "センター", "世界のダンサー"],
+      grade: "中1"
+    },
+    skills: [
+      { id: "bunsu", name: "分数の四則（算数の土台）", band: "数学", subject: "math", gen: "bunsu",
+        terms: [["分子", "分数の上の数"], ["分母", "分数の下の数"], ["通分", "分母をそろえること"]] },
+      { id: "yakubun", name: "約分（算数の土台）", band: "数学", subject: "math", gen: "yakubun",
+        terms: [["約分", "分子と分母を同じ数でわって、かんたんな分数にすること"], ["最大公約数", "分子と分母のどちらも割り切れる、いちばん大きい数"]] },
+      { id: "shosu", name: "小数の計算（算数の土台）", band: "数学", subject: "math", gen: "shosu",
+        terms: [["小数点", "整数と小数を区切る点。位置をそろえて計算する"]] },
+      { id: "seifu_kagen", name: "正負の数 たし算ひき算", band: "数学", subject: "math", gen: "seifu_kagen",
+        terms: [["符号", "＋（プラス）と −（マイナス）の記号"], ["絶対値", "符号を取りのぞいた、数の大きさ"]] },
+      { id: "seifu_jojo", name: "正負の数 かけ算わり算", band: "数学", subject: "math", gen: "seifu_jojo",
+        terms: [["同符号", "符号が同じ2つの数（答えは＋）"], ["異符号", "符号がちがう2つの数（答えは−）"]] },
+      { id: "shisoku", name: "四則の混じった計算", band: "数学", subject: "math", gen: "shisoku",
+        terms: [["四則", "たし算・ひき算・かけ算・わり算の4つ"], ["計算の順序", "かっこ → 累乗 → ×÷ → ＋− の順"]] },
+      { id: "ruijo", name: "累乗", band: "数学", subject: "math", gen: "ruijo",
+        terms: [["累乗", "同じ数を何回もかけたもの（例: 3² = 3×3）"], ["指数", "右上の小さい数。かける回数を表す"]] },
+      { id: "moji_arawashi", name: "文字式の表し方", band: "数学", subject: "math", gen: "moji_arawashi",
+        terms: [["文字式", "x や a などの文字を使った式"], ["積", "かけ算の答え"], ["商", "わり算の答え"]] },
+      { id: "moji_keisan", name: "文字式の計算", band: "数学", subject: "math", gen: "moji_keisan",
+        terms: [["項", "式を＋で区切ったひとつひとつ（例: 3x＋5 の項は 3x と 5）"], ["係数", "文字の前についている数字（3x なら 3）"]] },
+      { id: "bunpai", name: "分配法則", band: "数学", subject: "math", gen: "bunpai",
+        terms: [["分配法則", "かっこの外の数を、中のすべての項にかけるきまり"]] },
+      { id: "ichiji_hoteishiki", stdMonth: "2026-10", preview: true, name: "一次方程式", band: "数学", subject: "math", gen: "ichiji_hoteishiki",
+        terms: [["方程式", "まだ分からない数 x をふくむ等式"], ["移項", "項を符号を変えて反対側の辺に移すこと"], ["解", "方程式を成り立たせる x の値"]] },
+      { id: "hirei", stdMonth: "2026-12", preview: true, name: "比例・反比例", band: "数学", subject: "math", gen: "hirei",
+        terms: [["比例", "x が2倍3倍になると y も2倍3倍になる関係（y = ax）"], ["反比例", "x が2倍3倍になると y が半分・3分の1になる関係（y = a/x）"], ["比例定数", "y = ax や y = a/x の a のこと"]] },
+      { id: "zukei_en", stdMonth: "2027-02", preview: true, name: "円とおうぎ形", band: "数学", subject: "math", gen: "zukei_en",
+        terms: [["π（パイ・円周率）", "円周 ÷ 直径 の値。約3.14。答えではπのまま残す"], ["弧", "円周の一部分"], ["おうぎ形", "円を2本の半径で切り取った形"], ["中心角", "おうぎ形の、中心のところの角度"]] },
+      { id: "data_katsuyo", stdMonth: "2027-03", preview: true, name: "データの活用", band: "数学", subject: "math", gen: "data_katsuyo",
+        terms: [["平均値", "合計 ÷ 個数"], ["中央値", "小さい順に並べたときの真ん中の値"], ["範囲", "最大値 − 最小値"]] },
+      { id: "tango", name: "英単語", band: "英語", subject: "eng", vocab: VOCAB,
+        lesson: ["単語は「見て意味が分かる」→「日本語から英語が出る」の2段階で覚える",
+          "1日少しずつでも、毎日ふれるのがいちばん効く",
+          "まちがえた単語は数日後にまた出てくるので、そのとき思い出せればOK"] },
+      { id: "bunpo", name: "文法：be動詞・一般動詞・can", band: "英語", subject: "eng", bank: GRAMMAR,
+        lesson: ["英語の文には「be動詞の文」と「一般動詞の文」の2種類がある",
+          "be動詞（am/is/are）= 「〜です・〜にいる」。主語によって使い分ける",
+          "一般動詞（like/play など）= 動きや状態。否定は don't、疑問は Do で始める",
+          "can は「〜できる」。あとの動詞はいつも原形"] },
+      { id: "bunpo_sanjo", stdMonth: "2026-11", name: "文法：三単現・進行形・過去形", band: "英語", preview: true, subject: "eng", bank: GRAMMAR2,
+        lesson: ["主語が he/she など3人称単数で現在の文は、動詞に s（三単現）",
+          "「今〜している」は現在進行形 be動詞 + 〜ing",
+          "「昨日〜した」は過去形。played のような規則形と went のような不規則形がある",
+          "疑問文: 三単現は Does、進行形は be動詞、過去は Did で始める"] },
+      { id: "narabekae", name: "英文の並べ替え", band: "英語", subject: "eng", sort: SORT,
+        lesson: ["英語は「だれが → どうする → なにを」の順にならべる",
+          "疑問文は Do や be動詞、Can が文の先頭に出る",
+          "時間や場所のことば（every day, here など）はふつう文の最後"] }
+    ]
+  };
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* ===== 共通エンジン =====
+ * 依存: window.PROFILE（プロフィール定義）, window.MATHGEN（数学生成器）
+ * 構成: LOGIC（純ロジック・DOM非依存） / STORE（localStorage層） / UI
+ */
+(function (global) {
+  "use strict";
+
+  /* ================= LOGIC ================= */
+  var LOGIC = {};
+
+  LOGIC.todayStr = function (d) {
+    var dt = d || new Date();
+    var m = ("0" + (dt.getMonth() + 1)).slice(-2), day = ("0" + dt.getDate()).slice(-2);
+    return dt.getFullYear() + "-" + m + "-" + day;
+  };
+  LOGIC.addDays = function (dateStr, n) {
+    var p = dateStr.split("-");
+    var dt = new Date(+p[0], +p[1] - 1, +p[2] + n);
+    return LOGIC.todayStr(dt);
+  };
+
+  LOGIC.newState = function (profile) {
+    var skills = {}, learned = {};
+    profile.skills.forEach(function (s) {
+      skills[s.id] = { g: 0, tier: 1, recent: [] };
+      learned[s.id] = !s.preview; // preview: true のスキルは初期状態で「未履修」
+    });
+    return { v: 1, xp: 0, streak: { count: 0, last: null }, skills: skills,
+      learned: learned, snooze: {}, box: [], history: {}, totalGood: 0, totalAns: 0 };
+  };
+
+  // レベル: 次のレベルまでの必要XPは 80 + (レベル-1)*30
+  LOGIC.levelInfo = function (xp) {
+    var level = 1, rest = xp;
+    for (;;) {
+      var need = 80 + (level - 1) * 30;
+      if (rest < need) return { level: level, cur: rest, need: need };
+      rest -= need; level++;
+      if (level > 99) return { level: 99, cur: 0, need: 1 };
+    }
+  };
+  LOGIC.titleIndex = function (level) {
+    var th = [1, 4, 8, 13, 19], idx = 0;
+    for (var i = 0; i < th.length; i++) if (level >= th[i]) idx = i;
+    return idx;
+  };
+
+  // 解答を状態に反映（初回解答のみ呼ぶ）。戻り値: 獲得XP
+  LOGIC.applyAnswer = function (state, skillId, ok, tier) {
+    var ss = state.skills[skillId];
+    if (!ss) return 0;
+    var xp = 0;
+    if (ok) {
+      ss.g = Math.min(100, ss.g + (tier === 1 ? 6 : tier === 2 ? 9 : 12));
+      xp = 8 + tier * 2;
+      state.totalGood++;
+    } else {
+      ss.g = Math.max(0, ss.g - 4);
+    }
+    state.totalAns++;
+    ss.recent.push(ok ? 1 : 0);
+    if (ss.recent.length > 10) ss.recent.shift();
+    // 昇格判定: 直近10問で8割以上
+    if (ss.recent.length === 10 && ss.tier < 3) {
+      var good = ss.recent.reduce(function (a, b) { return a + b; }, 0);
+      if (good >= 8) { ss.tier++; ss.recent = []; }
+    }
+    state.xp += xp;
+    return xp;
+  };
+
+  // Leitnerボックス: 誤答した問題を保管し、期日が来たら再出題
+  LOGIC.boxOnWrong = function (state, skillId, q, today) {
+    state.box = state.box.filter(function (it) { return !(it.skillId === skillId && it.q.text === q.text); });
+    state.box.push({ skillId: skillId, q: q, box: 1, due: LOGIC.addDays(today, 1) });
+    if (state.box.length > 40) state.box.shift();
+  };
+  LOGIC.boxOnAnswered = function (state, item, ok, today) {
+    var i = state.box.indexOf(item);
+    if (i === -1) return;
+    if (ok) {
+      item.box++;
+      if (item.box > 3) state.box.splice(i, 1);
+      else item.due = LOGIC.addDays(today, item.box === 2 ? 1 : 3);
+    } else {
+      item.box = 1;
+      item.due = LOGIC.addDays(today, 1);
+    }
+  };
+  LOGIC.dueItems = function (state, today) {
+    return state.box.filter(function (it) { return it.due <= today; });
+  };
+
+  // 今日のミッション編成: 復習(box)最大3問 + 弱点重み付きで残りを選ぶ
+  LOGIC.composeMission = function (profile, state, opt) {
+    opt = opt || {};
+    var n = opt.n || 10, today = opt.today || LOGIC.todayStr();
+    var items = [];
+    if (opt.focusSkillId) {
+      var fs = profile.skills.filter(function (s) { return s.id === opt.focusSkillId; })[0];
+      if (fs) {
+        for (var f = 0; f < n; f++) items.push({ kind: "skill", skillId: fs.id });
+        return items;
+      }
+    }
+    var due = LOGIC.dueItems(state, today).slice(0, 3);
+    due.forEach(function (it) { items.push({ kind: "box", item: it }); });
+    // ミッションは履修済みスキルのみから編成（未履修＝予習はマップのタップでのみ出題）
+    var pool = profile.skills.filter(function (s) {
+      return !state.learned || state.learned[s.id] !== false;
+    });
+    if (!pool.length) pool = profile.skills;
+    // 弱点重み: ゲージが低いほど選ばれやすい（重み = 110 - ゲージ）
+    var bySubj = { math: [], eng: [] };
+    pool.forEach(function (s) { bySubj[s.subject].push(s); });
+    var pickWeighted = function (list) {
+      var total = 0, w = list.map(function (s) {
+        var v = 110 - (state.skills[s.id] ? state.skills[s.id].g : 0);
+        total += v; return v;
+      });
+      var r = Math.random() * total;
+      for (var i = 0; i < list.length; i++) { r -= w[i]; if (r <= 0) return list[i]; }
+      return list[list.length - 1];
+    };
+    // 同一スキルは1セット3問まで（単調さと同一問題の重複を防ぐ）
+    var counts = {};
+    while (items.length < n) {
+      var subj = (Math.random() < 0.6 && bySubj.math.length) || !bySubj.eng.length ? "math" : "eng";
+      var sk = pickWeighted(bySubj[subj]);
+      var tries = 0;
+      while ((counts[sk.id] || 0) >= 3 && tries < 10) { sk = pickWeighted(bySubj[subj]); tries++; }
+      counts[sk.id] = (counts[sk.id] || 0) + 1;
+      items.push({ kind: "skill", skillId: sk.id });
+    }
+    return items;
+  };
+
+  LOGIC.updateStreakOnSet = function (state, today) {
+    var st = state.streak;
+    if (st.last === today) return st.count;
+    st.count = (st.last === LOGIC.addDays(today, -1)) ? st.count + 1 : 1;
+    st.last = today;
+    return st.count;
+  };
+  LOGIC.streakDisplay = function (state, today) {
+    var st = state.streak;
+    if (!st.last) return 0;
+    if (st.last === today || st.last === LOGIC.addDays(today, -1)) return st.count;
+    return 0;
+  };
+
+  LOGIC.recordSet = function (state, today, good, total) {
+    var h = state.history[today] || { sets: 0, good: 0, total: 0 };
+    h.sets++; h.good += good; h.total += total;
+    state.history[today] = h;
+  };
+
+  /* ---- 問題の組み立て ---- */
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  LOGIC.buildVocabQ = function (skill, tier) {
+    var w = pick(skill.vocab);
+    var enToJa = tier === 1 ? true : tier === 2 ? false : Math.random() < 0.5;
+    var others = shuffle(skill.vocab.filter(function (x) { return x[0] !== w[0]; })).slice(0, 3);
+    var correct = enToJa ? w[1] : w[0];
+    var opts = shuffle([correct].concat(others.map(function (x) { return enToJa ? x[1] : x[0]; })));
+    return { type: "choice", oneCol: enToJa,
+      text: enToJa ? "「" + w[0] + "」の意味は？" : "「" + w[1] + "」を英語で言うと？",
+      opts: opts, ans: opts.indexOf(correct),
+      exp: w[0] + " = " + w[1],
+      speak: w[0],
+      detail: skill.lesson };
+  };
+  LOGIC.buildBankQ = function (skill, tier) {
+    var pool = skill.bank.filter(function (x) { return x.t === tier; });
+    if (!pool.length) pool = skill.bank.filter(function (x) { return x.t <= tier; });
+    if (!pool.length) pool = skill.bank;
+    var item = pick(pool);
+    var correct = item.opts[item.a];
+    var opts = shuffle(item.opts.slice());
+    return { type: "choice", oneCol: true, text: item.q, opts: opts, ans: opts.indexOf(correct),
+      exp: item.exp, detail: skill.lesson };
+  };
+  LOGIC.buildSortQ = function (skill, tier) {
+    var pool = skill.sort.filter(function (x) { return x.t === tier; });
+    if (!pool.length) pool = skill.sort.filter(function (x) { return x.t <= tier; });
+    if (!pool.length) pool = skill.sort;
+    var item = pick(pool);
+    return { type: "sort", text: "並べ替えて英文を作ろう", sub: "「" + item.jp + "」",
+      tokens: item.tokens.slice(), ans: item.tokens.join(" "),
+      exp: item.exp, speak: item.tokens.join(" "), detail: skill.lesson };
+  };
+  LOGIC.buildQuestion = function (profile, skillId, tier, mathgen) {
+    var skill = profile.skills.filter(function (s) { return s.id === skillId; })[0];
+    if (!skill) throw new Error("unknown skill: " + skillId);
+    var q;
+    if (skill.gen) q = mathgen.gen(skill.gen, tier);
+    else if (skill.vocab) q = LOGIC.buildVocabQ(skill, tier);
+    else if (skill.bank) q = LOGIC.buildBankQ(skill, tier);
+    else if (skill.sort) q = LOGIC.buildSortQ(skill, tier);
+    else throw new Error("skill has no source: " + skillId);
+    q.skillId = skillId;
+    q.skillName = (skill.subject === "math" ? "数学｜" : "英語｜") + skill.name;
+    if (skill.terms) q.terms = skill.terms;
+    return q;
+  };
+
+  /* ---- バックアップ ---- */
+  LOGIC.exportState = function (state) {
+    var json = JSON.stringify(state);
+    // UTF-8対応のbase64
+    return "MNB1." + btoa2(json);
+  };
+  LOGIC.importState = function (code) {
+    code = (code || "").trim();
+    if (code.indexOf("MNB1.") !== 0) throw new Error("バックアップコードの形式がちがいます");
+    var json = atob2(code.slice(5));
+    var st = JSON.parse(json);
+    if (!st || typeof st.xp !== "number" || !st.skills) throw new Error("コードの中身が読めません");
+    return st;
+  };
+  function btoa2(str) {
+    if (typeof btoa !== "undefined") {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+    return Buffer.from(str, "utf8").toString("base64");
+  }
+  function atob2(b64) {
+    if (typeof atob !== "undefined") {
+      return decodeURIComponent(escape(atob(b64)));
+    }
+    return Buffer.from(b64, "base64").toString("utf8");
+  }
+
+  global.ENGINE_LOGIC = LOGIC;
+
+  /* ================= 以降はブラウザのみ ================= */
+  if (typeof document === "undefined") return;
+
+  var PROFILE = global.PROFILE, MATHGEN = global.MATHGEN;
+  var T = PROFILE.texts;
+  var M = "−";
+
+  /* ---- ストレージ層（差し替え可能） ---- */
+  var STORE = {
+    load: function () {
+      try {
+        var raw = localStorage.getItem(PROFILE.storageKey);
+        if (!raw) return null;
+        var st = JSON.parse(raw);
+        // 新スキル・履修フラグが増えていたら補完
+        if (!st.learned) st.learned = {};
+        if (!st.snooze) st.snooze = {};
+        PROFILE.skills.forEach(function (s) {
+          if (!st.skills[s.id]) st.skills[s.id] = { g: 0, tier: 1, recent: [] };
+          if (!(s.id in st.learned)) st.learned[s.id] = !s.preview;
+        });
+        return st;
+      } catch (e) { return null; }
+    },
+    save: function (st) {
+      try { localStorage.setItem(PROFILE.storageKey, JSON.stringify(st)); } catch (e) { /* 容量超過等は黙殺しない */ toast("保存に失敗しました"); }
+    }
+  };
+
+  var state = STORE.load() || LOGIC.newState(PROFILE);
+
+  /* ---- ミッション進行の一時状態 ---- */
+  var run = null; // {items, idx, good, combo, maxCombo, xpGain, focusSkill, firstTry, curQ, numBuf}
+
+  var app = document.getElementById("app");
+
+  function $(id) { return document.getElementById(id); }
+  function setText(key, val) {
+    var els = app.querySelectorAll('[data-txt="' + key + '"]');
+    for (var i = 0; i < els.length; i++) els[i].textContent = val;
+  }
+  function locked() { return $("verdict").classList.contains("on"); }
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    setTimeout(function () { t.classList.remove("on"); }, 1800);
+  }
+
+  /* ---- 画面遷移 ---- */
+  function show(name) {
+    var screens = app.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) {
+      screens[i].classList.toggle("on", screens[i].getAttribute("data-screen") === name);
+    }
+    var foots = document.querySelectorAll("#app-foot button");
+    for (var k = 0; k < foots.length; k++) {
+      foots[k].classList.toggle("on", foots[k].getAttribute("data-go") === name);
+    }
+    if (name === "home") renderHome();
+    if (name === "map") renderMap();
+    if (name === "parent") renderParent();
+  }
+
+  /* ---- ホーム ---- */
+  function renderHome() {
+    var today = LOGIC.todayStr();
+    setText("greet", T.greet);
+    setText("streak", LOGIC.streakDisplay(state, today) + " " + T.streakWord);
+    var li = LOGIC.levelInfo(state.xp);
+    setText("rank", T.titles[LOGIC.titleIndex(li.level)]);
+    setText("lv", "Lv." + li.level + " / 次のレベルまで XP " + (li.need - li.cur));
+    $("home-xp-bar").style.width = Math.round(li.cur / li.need * 100) + "%";
+    var h = state.history[today];
+    setText("today", h ? "今日: " + h.sets + "セット・" + h.total + "問（正解 " + h.good + "）" : "今日はまだ始めていない");
+    renderAskLearned(today);
+  }
+
+  // 履修確認プロンプト: 標準進度の月を過ぎても未履修のスキルを1件ずつ確認する
+  function renderAskLearned(today) {
+    var ask = $("ask-learned");
+    var ym = today.slice(0, 7);
+    var cand = PROFILE.skills.filter(function (s) {
+      return state.learned && state.learned[s.id] === false &&
+        s.stdMonth && s.stdMonth <= ym &&
+        (!state.snooze[s.id] || state.snooze[s.id] <= today);
+    })[0];
+    if (!cand) { ask.classList.remove("on"); return; }
+    ask.classList.add("on");
+    $("al-q").textContent = "学校で「" + cand.name + "」はもう習った？";
+    $("al-yes").onclick = function () {
+      state.learned[cand.id] = true;
+      STORE.save(state);
+      toast("ミッションの範囲に追加しました");
+      renderHome();
+    };
+    $("al-no").onclick = function () {
+      state.snooze[cand.id] = LOGIC.addDays(today, 14);
+      STORE.save(state);
+      renderHome();
+    };
+  }
+
+  /* ---- ミッション ---- */
+  function startMission(focusSkillId) {
+    run = {
+      items: LOGIC.composeMission(PROFILE, state, { focusSkillId: focusSkillId || null, n: 10 }),
+      idx: 0, good: 0, combo: 0, maxCombo: 0, xpGain: 0,
+      focusSkill: focusSkillId || null, firstTry: true, curQ: null, numBuf: "",
+      seen: {}
+    };
+    show("quiz");
+    renderQuestion(false);
+  }
+  function qKey(q) { return q.text + "|" + (q.sub || ""); }
+
+  function currentItem() { return run.items[run.idx]; }
+
+  function renderQuestion(isRetry) {
+    var it = currentItem();
+    if (!it) { finishSet(); return; }
+    if (!isRetry) {
+      run.firstTry = true;
+      if (it.kind === "box") run.curQ = it.item.q;
+      else {
+        var tier = state.skills[it.skillId] ? state.skills[it.skillId].tier : 1;
+        // 同一セット内の重複問題を避ける（最大8回まで引き直し）
+        var q0 = null;
+        for (var att = 0; att < 8; att++) {
+          q0 = LOGIC.buildQuestion(PROFILE, it.skillId, tier, MATHGEN);
+          if (!run.seen[qKey(q0)]) break;
+        }
+        run.curQ = q0;
+      }
+      run.seen[qKey(run.curQ)] = true;
+    }
+    var q = run.curQ;
+    setText("qnum", "第" + (run.idx + 1) + "問 / " + run.items.length);
+    setText("combo", run.combo > 0 ? T.comboWord + " ×" + run.combo : "");
+    var fb = $("focus-banner");
+    var isBox = it.kind === "box";
+    fb.classList.toggle("on", !!run.focusSkill || isBox);
+    if (run.focusSkill) {
+      var fsk = PROFILE.skills.filter(function (s) { return s.id === run.focusSkill; })[0];
+      fb.textContent = "集中練習｜" + (fsk ? fsk.name : "");
+    } else if (isBox) fb.textContent = "復習チャレンジ｜前にまちがえた問題";
+    setText("skill", q.skillName || "");
+    $("q-text").innerHTML = "";
+    $("q-text").appendChild(document.createTextNode(q.text));
+    if (q.sub) {
+      var subEl = document.createElement("span");
+      subEl.className = "q-sub"; subEl.textContent = q.sub;
+      $("q-text").appendChild(subEl);
+    }
+    $("prog-bar").style.width = (run.idx / run.items.length * 100) + "%";
+    $("giveup").style.display = "";
+    hideVerdict();
+    run.numBuf = "";
+    var body = $("q-body");
+    body.innerHTML = "";
+
+    if (q.type === "choice") {
+      var grid = document.createElement("div");
+      grid.className = "opts" + (q.oneCol ? " one-col" : "");
+      q.opts.forEach(function (o, i) {
+        var b = document.createElement("button");
+        b.className = "opt"; b.textContent = o;
+        b.addEventListener("click", function () {
+          if (locked()) return;
+          b.classList.add(i === q.ans ? "good" : "miss");
+          judge(i === q.ans);
+        });
+        grid.appendChild(b);
+      });
+      body.appendChild(grid);
+    }
+
+    if (q.type === "numeric") {
+      var row = document.createElement("div"); row.className = "num-row";
+      var disp = document.createElement("div"); disp.className = "num-display"; disp.id = "num-disp"; disp.textContent = "？";
+      var del = document.createElement("button"); del.className = "key"; del.textContent = "⌫";
+      del.setAttribute("aria-label", "1文字消す");
+      del.addEventListener("click", function () { pressKey("⌫", q); });
+      row.appendChild(disp); row.appendChild(del);
+      body.appendChild(row);
+      var keys = document.createElement("div"); keys.className = "keys";
+      ["7", "8", "9", "4", "5", "6", "1", "2", "3", M, "0", "."].forEach(function (k) {
+        var b = document.createElement("button");
+        b.className = "key"; b.textContent = k;
+        if (k === "." && !q.dec) b.disabled = true;
+        b.addEventListener("click", function () { pressKey(k, q); });
+        keys.appendChild(b);
+      });
+      body.appendChild(keys);
+      var okB = document.createElement("button");
+      okB.className = "big-btn"; okB.id = "num-ok"; okB.textContent = "答える"; okB.disabled = true;
+      okB.addEventListener("click", function () { judgeNumeric(q); });
+      body.appendChild(okB);
+    }
+
+    if (q.type === "sort") {
+      var ansRow = document.createElement("div"); ansRow.className = "sort-answer"; ansRow.id = "sort-ans";
+      body.appendChild(ansRow);
+      var pool = document.createElement("div"); pool.className = "sort-pool"; pool.id = "sort-pool";
+      shuffle(q.tokens.slice()).forEach(function (tk) {
+        var b = document.createElement("button");
+        b.className = "tok"; b.textContent = tk;
+        b.addEventListener("click", function () {
+          if (locked()) return;
+          (b.parentElement === pool ? ansRow : pool).appendChild(b);
+          $("sort-ok").disabled = pool.children.length > 0;
+        });
+        pool.appendChild(b);
+      });
+      body.appendChild(pool);
+      var sOk = document.createElement("button");
+      sOk.className = "big-btn"; sOk.id = "sort-ok"; sOk.textContent = "これで完成！"; sOk.disabled = true;
+      sOk.addEventListener("click", function () {
+        if (locked()) return;
+        var toks = ansRow.querySelectorAll(".tok"), s = [];
+        for (var i = 0; i < toks.length; i++) s.push(toks[i].textContent);
+        judge(s.join(" ") === q.ans);
+      });
+      body.appendChild(sOk);
+    }
+  }
+
+  function pressKey(k, q) {
+    if (locked()) return;
+    if (k === "⌫") {
+      run.numBuf = run.numBuf.slice(0, -1);
+      if (run.numBuf === "-") run.numBuf = "";
+    } else if (k === M) {
+      run.numBuf = run.numBuf.charAt(0) === "-" ? run.numBuf.slice(1) : "-" + run.numBuf;
+    } else if (k === ".") {
+      if (q && !q.dec) return; // 小数を使わない問題では無効（画面のキーも無効表示）
+      if (run.numBuf.indexOf(".") === -1) {
+        // 「.」から打ち始めたら 0. と解釈する
+        run.numBuf += (run.numBuf === "" || run.numBuf === "-") ? "0." : ".";
+      }
+    } else if (run.numBuf.replace(/[-.]/g, "").length < 7) {
+      run.numBuf += k;
+    }
+    $("num-disp").textContent = run.numBuf === "" ? "？" : run.numBuf.replace(/-/, M);
+    var invalid = run.numBuf === "" || run.numBuf === "-" || run.numBuf.slice(-1) === ".";
+    $("num-ok").disabled = invalid;
+  }
+  function judgeNumeric(q) {
+    if (locked()) return;
+    var v = parseFloat(run.numBuf);
+    if (isNaN(v)) return;
+    judge(v === parseFloat(q.ans));
+  }
+
+  function judge(ok, gaveUp) {
+    var it = currentItem(), q = run.curQ, today = LOGIC.todayStr();
+    if (run.firstTry) {
+      if (it.kind === "box") {
+        LOGIC.boxOnAnswered(state, it.item, ok, today);
+        var tierB = state.skills[q.skillId] ? state.skills[q.skillId].tier : 1;
+        run.xpGain += LOGIC.applyAnswer(state, q.skillId, ok, tierB);
+      } else {
+        var tier = state.skills[it.skillId].tier;
+        run.xpGain += LOGIC.applyAnswer(state, it.skillId, ok, tier);
+        if (!ok) LOGIC.boxOnWrong(state, it.skillId, q, today);
+      }
+      if (ok) run.good++;
+      STORE.save(state);
+    }
+    if (ok) { run.combo++; if (run.combo > run.maxCombo) run.maxCombo = run.combo; }
+    else run.combo = 0;
+    setText("combo", run.combo > 0 ? T.comboWord + " ×" + run.combo : "");
+    showVerdict(ok, q, gaveUp);
+    run.firstTry = false;
+  }
+
+  function showVerdict(ok, q, gaveUp) {
+    var v = $("verdict");
+    v.className = "verdict on " + (ok ? "good" : "miss");
+    $("v-title").textContent = gaveUp ? "だいじょうぶ、ここで覚えよう" : ok ? "正解！" : "おしい！";
+    // 「わからない」の場合は答えも見せる（4択は正解の選択肢が光っている）
+    var reveal = gaveUp && q.type !== "choice"
+      ? "正解は「" + (q.type === "numeric" ? String(q.ans).replace("-", M) : q.ans) + "」。"
+      : "";
+    $("v-exp").textContent = reveal + (q.exp || "");
+    $("giveup").style.display = "none";
+    var detail = $("v-detail"), steps = $("v-steps"), more = $("v-more");
+    detail.classList.remove("on");
+    steps.innerHTML = "";
+    (q.detail || []).forEach(function (s) {
+      var li = document.createElement("li"); li.textContent = s; steps.appendChild(li);
+    });
+    // 用語ミニ解説（数学スキルに定義があれば表示）
+    var termsBox = $("v-terms");
+    termsBox.innerHTML = "";
+    if (q.terms && q.terms.length) {
+      var head = document.createElement("p");
+      head.className = "t-head"; head.textContent = "用語の意味";
+      termsBox.appendChild(head);
+      q.terms.forEach(function (t) {
+        var row = document.createElement("p");
+        var b = document.createElement("b"); b.textContent = t[0];
+        row.appendChild(b);
+        row.appendChild(document.createTextNode(" … " + t[1]));
+        termsBox.appendChild(row);
+      });
+    }
+    var hasDetail = (q.detail && q.detail.length) || (q.terms && q.terms.length);
+    more.style.display = hasDetail ? "inline-block" : "none";
+    if (gaveUp && hasDetail) { // わからない時は段階解説を最初から開く
+      detail.classList.add("on");
+      more.textContent = "閉じる ▴";
+    }
+    // 英語の発音読み上げ（対応ブラウザのみ）
+    var sp = $("v-speak");
+    if (q.speak && typeof speechSynthesis !== "undefined") {
+      sp.style.display = "inline-block";
+      sp.onclick = function () {
+        var u = new SpeechSynthesisUtterance(q.speak);
+        u.lang = "en-US"; u.rate = 0.85;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+      };
+    } else sp.style.display = "none";
+    more.textContent = "くわしい解説を見る ▾";
+    more.onclick = function () {
+      var open = detail.classList.toggle("on");
+      more.textContent = open ? "閉じる ▴" : "くわしい解説を見る ▾";
+    };
+    var btn = $("v-next");
+    // わからない: 答えを見たので再挑戦はさせず次へ（この問題は復習ボックスで後日戻る）
+    btn.textContent = (ok || gaveUp) ? "次へ ▶" : "もう一度チャレンジ";
+    btn.onclick = (ok || gaveUp)
+      ? function () { run.idx++; renderQuestion(false); }
+      : function () { renderQuestion(true); };
+    v.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function hideVerdict() { $("verdict").className = "verdict"; }
+
+  /* ---- 結果 ---- */
+  function finishSet() {
+    var today = LOGIC.todayStr();
+    var bonus = run.maxCombo * 5;
+    state.xp += bonus;
+    run.xpGain += bonus;
+    LOGIC.updateStreakOnSet(state, today);
+    LOGIC.recordSet(state, today, run.good, run.items.length);
+    STORE.save(state);
+    show("result");
+    setText("crown", T.crown);
+    setText("victory", T.victory);
+    setText("vsub", T.vsub);
+    setText("rGood", run.good + " / " + run.items.length);
+    setText("rCombo", "×" + run.maxCombo);
+    setText("rXp", "+" + run.xpGain);
+    var li = LOGIC.levelInfo(state.xp);
+    setText("rank2", T.titles[LOGIC.titleIndex(li.level)]);
+    setText("lv2", "Lv." + li.level + " / 次のレベルまで XP " + (li.need - li.cur));
+    var bar = $("xp-bar");
+    var before = Math.max(0, Math.round((li.cur - run.xpGain) / li.need * 100));
+    bar.style.transition = "none";
+    bar.style.width = before + "%";
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        bar.style.transition = "width .9s";
+        bar.style.width = Math.round(li.cur / li.need * 100) + "%";
+      });
+    });
+    burstConfetti();
+    $("report-prev").classList.remove("on");
+  }
+
+  function burstConfetti() {
+    var box = $("confetti");
+    box.innerHTML = "";
+    var colors = PROFILE.theme === "dance"
+      ? ["#e0407b", "#8e6fd8", "#f2a93b", "#f7c8dd"]
+      : ["#46e08a", "#3d8bff", "#f5c542", "#ffffff"];
+    for (var i = 0; i < 26; i++) {
+      var p = document.createElement("i");
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.background = colors[i % colors.length];
+      p.style.animationDelay = (Math.random() * 0.5) + "s";
+      box.appendChild(p);
+    }
+  }
+
+  /* ---- スキルマップ ---- */
+  function tierLabel(t) { return t === 1 ? "基礎" : t === 2 ? "標準" : "テスト"; }
+  function renderMap() {
+    setText("mapsub", T.mapsub);
+    var body = $("map-body");
+    body.innerHTML = "";
+    var bands = [];
+    PROFILE.skills.forEach(function (s) {
+      var key = s.band || "";
+      var band = bands.filter(function (b) { return b.key === key; })[0];
+      if (!band) { band = { key: key, rows: [] }; bands.push(band); }
+      band.rows.push(s);
+    });
+    bands.forEach(function (band) {
+      var wrap = document.createElement("div"); wrap.className = "band";
+      if (band.key) {
+        var tag = document.createElement("span");
+        tag.className = "band-tag"; tag.textContent = band.key;
+        wrap.appendChild(tag);
+      }
+      band.rows.forEach(function (s) {
+        var ss = state.skills[s.id];
+        var isPreview = state.learned && state.learned[s.id] === false;
+        var row = document.createElement("div"); row.className = "skill-row";
+        var top = document.createElement("div"); top.className = "sr-top";
+        var nm = document.createElement("span"); nm.textContent = s.name;
+        var badge = document.createElement("span");
+        badge.className = "tier-badge"; badge.textContent = tierLabel(ss.tier);
+        nm.appendChild(badge);
+        if (isPreview) {
+          var pv = document.createElement("span");
+          pv.className = "preview-badge"; pv.textContent = "予習";
+          nm.appendChild(pv);
+        }
+        var pc = document.createElement("span"); pc.className = "pct"; pc.textContent = ss.g + "%";
+        top.appendChild(nm); top.appendChild(pc);
+        var bar = document.createElement("div"); bar.className = "bar";
+        var fill = document.createElement("i"); fill.style.width = ss.g + "%";
+        bar.appendChild(fill);
+        var hint = document.createElement("div");
+        hint.className = "sr-hint";
+        hint.textContent = isPreview
+          ? "まだ習っていない範囲。タップで予習（ミッションには出ない）"
+          : "タップでこのスキルだけ集中練習";
+        row.appendChild(top); row.appendChild(bar); row.appendChild(hint);
+        row.addEventListener("click", function () { startMission(s.id); });
+        wrap.appendChild(row);
+      });
+      body.appendChild(wrap);
+    });
+  }
+
+  /* ---- 保護者画面 ---- */
+  function renderParent() {
+    var today = LOGIC.todayStr();
+    // 直近7日
+    var tbl = $("parent-days");
+    tbl.innerHTML = "<tr><th>日付</th><th>セット</th><th>問題数</th><th>正答率</th></tr>";
+    for (var i = 0; i < 7; i++) {
+      var d = LOGIC.addDays(today, -i);
+      var h = state.history[d];
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + d.slice(5).replace("-", "/") + "</td><td>" + (h ? h.sets : 0) + "</td><td>" +
+        (h ? h.total : 0) + "</td><td>" + (h && h.total ? Math.round(h.good / h.total * 100) + "%" : "—") + "</td>";
+      tbl.appendChild(tr);
+    }
+    var li = LOGIC.levelInfo(state.xp);
+    $("parent-sum").textContent = "累計 " + state.totalAns + "問（正解 " + state.totalGood + "） / 連続学習 " +
+      LOGIC.streakDisplay(state, today) + "日 / Lv." + li.level + "（" + T.titles[LOGIC.titleIndex(li.level)] + "）";
+    // 弱点上位3
+    var weak = PROFILE.skills.slice().sort(function (a, b) { return state.skills[a.id].g - state.skills[b.id].g; }).slice(0, 3);
+    $("parent-weak").innerHTML = "";
+    weak.forEach(function (s) {
+      var li2 = document.createElement("li");
+      li2.textContent = s.name + "（習熟 " + state.skills[s.id].g + "%）";
+      $("parent-weak").appendChild(li2);
+    });
+    $("backup-out").value = "";
+    $("range-reset-confirm").classList.remove("on");
+    $("wipe-confirm").classList.remove("on");
+    $("wipe-word").value = "";
+    $("wipe-yes").disabled = true;
+    // 学習範囲（履修済み）の設定
+    var rb = $("range-body");
+    rb.innerHTML = "";
+    PROFILE.skills.forEach(function (s) {
+      var label = document.createElement("label");
+      label.className = "range-row";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !state.learned || state.learned[s.id] !== false;
+      cb.addEventListener("change", function () {
+        if (!state.learned) state.learned = {};
+        state.learned[s.id] = cb.checked;
+        STORE.save(state);
+      });
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(" " + (s.subject === "math" ? "数学：" : "英語：") + s.name));
+      rb.appendChild(label);
+    });
+  }
+
+  function reportText() {
+    var today = LOGIC.todayStr();
+    var h = state.history[today] || { sets: 0, good: 0, total: 0 };
+    var weak = PROFILE.skills.slice().sort(function (a, b) { return state.skills[a.id].g - state.skills[b.id].g; }).slice(0, 2);
+    return "【学習レポート】" + today.replace(/-/g, "/") + "\n" +
+      T.grade + "・数学/英語\n" +
+      "今日: " + h.sets + "セット・" + h.total + "問（正解 " + h.good + "）\n" +
+      "連続学習: " + LOGIC.streakDisplay(state, today) + "日\n" +
+      "いま弱いところ: " + weak.map(function (s) { return s.name; }).join("、");
+  }
+  function sendReport() {
+    var text = reportText();
+    if (navigator.share) {
+      navigator.share({ text: text }).catch(function () { /* キャンセルは無視 */ });
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () { toast("レポートをコピーしました"); });
+    } else {
+      var prev = $("report-prev");
+      $("report-text").textContent = text;
+      prev.classList.add("on");
+    }
+  }
+
+  /* ---- イベント配線 ---- */
+  app.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act],[data-go]");
+    if (!t) return;
+    var act = t.getAttribute("data-act");
+    if (act === "start") startMission(null);
+    if (act === "again") startMission(run && run.focusSkill);
+    if (act === "map") show("map");
+    if (act === "home") show("home");
+    if (act === "parent") show("parent");
+    if (act === "report") {
+      var prev = $("report-prev");
+      $("report-text").textContent = reportText();
+      prev.classList.toggle("on");
+    }
+    if (act === "report-send") sendReport();
+    if (act === "backup-export") {
+      $("backup-out").value = LOGIC.exportState(state);
+      $("backup-out").select();
+      if (navigator.clipboard) navigator.clipboard.writeText($("backup-out").value).then(function () { toast("コードをコピーしました"); });
+    }
+    if (act === "wipe") {
+      $("wipe-confirm").classList.toggle("on");
+    }
+    if (act === "wipe-no") {
+      $("wipe-confirm").classList.remove("on");
+      $("wipe-word").value = "";
+      $("wipe-yes").disabled = true;
+    }
+    if (act === "wipe-yes") {
+      if ($("wipe-word").value.trim() !== "リセット") return; // 入力確認（3重目）
+      try { localStorage.removeItem(PROFILE.storageKey); } catch (e) { /* noop */ }
+      state = LOGIC.newState(PROFILE);
+      STORE.save(state);
+      $("wipe-confirm").classList.remove("on");
+      $("wipe-word").value = "";
+      $("wipe-yes").disabled = true;
+      toast("すべてのデータを消しました");
+      show("home");
+    }
+    if (act === "range-reset") {
+      $("range-reset-confirm").classList.toggle("on");
+    }
+    if (act === "range-reset-no") {
+      $("range-reset-confirm").classList.remove("on");
+    }
+    if (act === "range-reset-yes") {
+      PROFILE.skills.forEach(function (s) { state.learned[s.id] = !s.preview; });
+      state.snooze = {};
+      STORE.save(state);
+      $("range-reset-confirm").classList.remove("on");
+      toast("履修状況を初期設定に戻しました");
+      renderParent();
+    }
+    if (act === "backup-import") {
+      try {
+        var st = LOGIC.importState($("backup-in").value);
+        state = st;
+        STORE.save(state);
+        toast("進捗を読み込みました");
+        show("home");
+      } catch (err) { toast(err.message || "読み込みに失敗しました"); }
+    }
+    if (t.hasAttribute("data-go")) show(t.getAttribute("data-go"));
+  });
+
+  // PCのキーボード対応（数値問題: 数字・マイナス・小数点・Backspace・Enter）
+  document.addEventListener("keydown", function (e) {
+    var quiz = app.querySelector('.screen[data-screen="quiz"]');
+    if (!quiz || !quiz.classList.contains("on") || !run) return;
+    if (locked()) {
+      if (e.key === "Enter") { e.preventDefault(); $("v-next").click(); }
+      return;
+    }
+    var q = run.curQ;
+    if (!q || q.type !== "numeric") return;
+    if (/^[0-9]$/.test(e.key)) pressKey(e.key, q);
+    else if (e.key === "-") pressKey(M, q);
+    else if (e.key === ".") pressKey(".", q);
+    else if (e.key === "Backspace") { e.preventDefault(); pressKey("⌫", q); }
+    else if (e.key === "Enter") { e.preventDefault(); if (!$("num-ok").disabled) judgeNumeric(q); }
+  });
+
+  // 全消去の入力確認: 「リセット」と打つまでボタンを無効化
+  $("wipe-word").addEventListener("input", function () {
+    $("wipe-yes").disabled = $("wipe-word").value.trim() !== "リセット";
+  });
+
+  // 「わからない」ボタン: 誤答扱いで答えと段階解説を最初から開く（責めない文言）
+  $("giveup").addEventListener("click", function () {
+    if (!run || locked()) return;
+    var q = run.curQ;
+    if (q.type === "choice") { // 正解の選択肢を光らせる
+      var opts = document.querySelectorAll("#q-body .opt");
+      if (opts[q.ans]) opts[q.ans].classList.add("good");
+    }
+    judge(false, true);
+  });
+
+  // テスト用フック（jsdomでの全ボタン挙動テストが使用）
+  global.__APP_TEST__ = {
+    getRun: function () { return run; },
+    getState: function () { return state; },
+    logic: LOGIC
+  };
+
+  document.title = PROFILE.appTitle;
+  show("home");
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<!--BODY-END-->
+</body>
+</html>
