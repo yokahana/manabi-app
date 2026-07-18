@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>取扱説明書 — 森とグミ</title>
+<style>
+  :root {
+    --paper: #fbfbf8;
+    --paper-2: #f4f5ef;
+    --surface: #ffffff;
+    --ink: #262d26;
+    --sub: #6b7568;
+    --line: #e1e4da;
+    --moss: #4c7a5e;
+    --moss-ink: #ffffff;
+    --leaf: #8fae86;
+    --honey: #e8b74f;
+    --honey-ink: #3a2a00;
+    --caramel: #b98c6b;
+    --good: #3f8f63;
+    --good-bg: #eaf4ec;
+  }
+  :root[data-theme="dark"] {
+    --paper: #171b17;
+    --paper-2: #1b201b;
+    --surface: #1e231e;
+    --ink: #e7ede6;
+    --sub: #9aa695;
+    --line: #313830;
+    --moss: #6fae87;
+    --moss-ink: #0d150f;
+    --leaf: #8fae86;
+    --honey: #e8b74f;
+    --honey-ink: #2c2109;
+    --caramel: #d9a15c;
+    --good: #6fae87;
+    --good-bg: #1c2c21;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #171b17;
+      --paper-2: #1b201b;
+      --surface: #1e231e;
+      --ink: #e7ede6;
+      --sub: #9aa695;
+      --line: #313830;
+      --moss: #6fae87;
+      --moss-ink: #0d150f;
+      --leaf: #8fae86;
+      --honey: #e8b74f;
+      --honey-ink: #2c2109;
+      --caramel: #d9a15c;
+      --good: #6fae87;
+      --good-bg: #1c2c21;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .page {
+    min-height: 100dvh;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    color: var(--ink);
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    line-height: 1.75;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1, h2, h3 {
+    font-family: "Hiragino Mincho ProN", "YuMincho", "Noto Serif JP", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .shell { display: grid; grid-template-columns: 240px minmax(0, 720px); gap: 48px; max-width: 1040px; margin: 0 auto; padding: 40px 24px 100px; justify-content: center; }
+  @media (max-width: 880px) { .shell { grid-template-columns: 1fr; padding: 0 0 80px; gap: 0; } }
+
+  /* ---- masthead ---- */
+  .masthead { grid-column: 1 / -1; max-width: 720px; margin: 0 auto; padding: 8px 24px 28px; }
+  @media (max-width: 880px) { .masthead { padding: 28px 20px 20px; } }
+  .eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--sub); font-weight: 700; margin: 0 0 10px; }
+  .masthead h1 { font-size: clamp(26px, 4vw, 34px); margin: 0 0 10px; }
+  .masthead p.lede { margin: 0; color: var(--sub); font-size: 15px; max-width: 56ch; }
+  .badge-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .badge {
+    font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line); color: var(--sub);
+  }
+
+  /* ---- nav ---- */
+  nav.toc {
+    position: sticky; top: 24px; align-self: start; font-size: 13px;
+  }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  nav.toc a {
+    display: block; padding: 7px 10px; border-radius: 8px; color: var(--sub);
+    text-decoration: none; border-left: 2px solid transparent;
+  }
+  nav.toc a:hover { color: var(--ink); background: var(--surface); }
+  nav.toc .toc-num { font-variant-numeric: tabular-nums; color: var(--leaf); margin-right: 6px; font-weight: 700; }
+  @media (max-width: 880px) {
+    nav.toc {
+      position: sticky; top: 0; z-index: 5; background: var(--paper);
+      border-bottom: 1px solid var(--line); padding: 10px 12px;
+      overflow-x: auto; white-space: nowrap;
+    }
+    nav.toc ol { flex-direction: row; gap: 4px; }
+    nav.toc a { border-left: none; padding: 6px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+  }
+
+  main { min-width: 0; }
+  section.card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+    padding: 28px 28px 26px; margin-bottom: 18px; scroll-margin-top: 76px;
+  }
+  @media (max-width: 880px) { section.card { border-radius: 0; border-left: none; border-right: none; margin-bottom: 0; padding: 26px 20px; } }
+  section.card h2 { font-size: 20px; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; }
+  section.card h2 .step-no { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; font-weight: 700; color: var(--leaf); letter-spacing: .08em; }
+  section.card .dek { margin: 0 0 18px; color: var(--sub); font-size: 13.5px; }
+  section.card h3 { font-size: 15px; margin: 20px 0 8px; }
+  section.card p { margin: 0 0 12px; font-size: 14.5px; max-width: 62ch; }
+  section.card ul, section.card ol { margin: 0 0 12px; padding-left: 22px; font-size: 14.5px; }
+  section.card li { margin: 5px 0; }
+  section.card p:last-child, section.card ul:last-child, section.card ol:last-child { margin-bottom: 0; }
+  strong { font-weight: 700; }
+  code { font-size: 12.5px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+
+  .note {
+    display: flex; gap: 10px; background: var(--paper-2); border: 1px solid var(--line);
+    border-left: 3px solid var(--caramel); border-radius: 10px; padding: 12px 14px; margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .note b { display: block; font-size: 12px; letter-spacing: .04em; color: var(--caramel); margin-bottom: 3px; }
+
+  /* ---- mini figures (アプリと同じ見た目の部品を再利用) ---- */
+  .fig-row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-end; margin: 16px 0 18px; }
+  .fig { text-align: center; }
+  .fig-cap { display: block; font-size: 11px; color: var(--sub); margin-top: 7px; }
+
+  .mini-bar { width: 120px; height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .mini-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--moss), var(--leaf)); }
+
+  .mini-gummy-jar { display: flex; gap: 4px; }
+  .mini-gummy { width: 13px; height: 17px; border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%; opacity: .95; }
+  .mini-gummy.g0 { background: var(--honey); }
+  .mini-gummy.g1 { background: var(--leaf); }
+  .mini-gummy.g2 { background: #d9d2c2; }
+  .mini-gummy.g3 { background: var(--caramel); }
+
+  .mini-forest { display: flex; gap: 3px; }
+  .mini-tree { position: relative; width: 14px; height: 18px; }
+  .mini-tree::before { content: ""; position: absolute; left: 50%; bottom: 0; width: 3px; height: 6px; background: #a9926f; transform: translateX(-50%); }
+  .mini-tree::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 14px; height: 14px; border-radius: 50% 50% 45% 45%; transform: translateX(-50%); background: var(--leaf); }
+  .mini-tree.t1::after { background: var(--moss); }
+  .mini-tree.t2::after { background: #6fae87; }
+  .mini-tree.t3::after { background: var(--honey); }
+
+  .mini-heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; width: 90px; }
+  .mini-heat i { display: block; width: 100%; aspect-ratio: 1; border-radius: 2px; background: var(--line); }
+  .mini-heat i.h1 { background: #c9dcc4; }
+  .mini-heat i.h2 { background: #8fae86; }
+  .mini-heat i.h3 { background: #4c7a5e; }
+  :root[data-theme="dark"] .mini-heat i.h1 { background: #33502f; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mini-heat i.h1 { background: #33502f; } }
+
+  .mini-timer { width: 90px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .mini-timer > i { display: block; height: 100%; width: 40%; background: var(--honey); }
+
+  /* ---- box list (ステップ手順) ---- */
+  .steps { counter-reset: step; list-style: none; margin: 0; padding: 0; }
+  .steps li {
+    counter-increment: step; position: relative; padding: 0 0 0 34px; margin: 0 0 14px;
+    font-size: 14.5px;
+  }
+  .steps li::before {
+    content: counter(step); position: absolute; left: 0; top: 0; width: 22px; height: 22px;
+    border-radius: 50%; background: var(--moss); color: var(--moss-ink);
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---- glossary table ---- */
+  .tbl-wrap { overflow-x: auto; }
+  table.gloss { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.gloss th, table.gloss td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.gloss th { color: var(--sub); font-weight: 700; font-size: 12px; letter-spacing: .03em; }
+  table.gloss td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* ---- faq ---- */
+  .faq dt { font-weight: 700; font-size: 14.5px; margin: 16px 0 4px; }
+  .faq dt::before { content: "Q. "; color: var(--leaf); }
+  .faq dd { margin: 0 0 4px 0; font-size: 14px; color: var(--ink); }
+  .faq dd::before { content: "A. "; color: var(--sub); font-weight: 700; }
+
+  footer.end { grid-column: 1 / -1; max-width: 720px; margin: 12px auto 0; padding: 0 24px; color: var(--sub); font-size: 12.5px; text-align: center; }
+  @media (max-width: 880px) { footer.end { padding: 24px 20px; } }
+
+  a { color: var(--moss); }
+  :focus-visible { outline: 3px solid var(--leaf); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="page">
+  <div class="masthead">
+    <p class="eyebrow">TOEIC 750 → 850 学習アプリ・取扱説明書</p>
+    <h1>森とグミ</h1>
+    <p class="lede">毎日5分、今日の1セットをのんびり積み重ねていくための使い方ガイド。迷ったら、いつでもここに戻ってきてね。</p>
+    <div class="badge-row">
+      <span class="badge">iPhone専用設計</span>
+      <span class="badge">通信不要（端末内保存）</span>
+      <span class="badge">1セット8問・約5分</span>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="toc" aria-label="目次">
+      <ol>
+        <li><a href="#setup"><span class="toc-num">1</span>はじめに使う準備</a></li>
+        <li><a href="#home"><span class="toc-num">2</span>ホーム画面の見方</a></li>
+        <li><a href="#diag"><span class="toc-num">3</span>はじめての力だめし</a></li>
+        <li><a href="#mission"><span class="toc-num">4</span>今日のミッション</a></li>
+        <li><a href="#review"><span class="toc-num">5</span>まちがえた問題の復習</a></li>
+        <li><a href="#score"><span class="toc-num">6</span>推定スコア</a></li>
+        <li><a href="#forest"><span class="toc-num">7</span>あなたの森とグミ</a></li>
+        <li><a href="#streak"><span class="toc-num">8</span>ストリークと休息チケット</a></li>
+        <li><a href="#week"><span class="toc-num">9</span>週間ミッション</a></li>
+        <li><a href="#map"><span class="toc-num">10</span>スキルマップと集中練習</a></li>
+        <li><a href="#mock"><span class="toc-num">11</span>模擬テストと受験日</a></li>
+        <li><a href="#data"><span class="toc-num">12</span>データの管理</a></li>
+        <li><a href="#faq"><span class="toc-num">13</span>よくある質問</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section class="card" id="setup">
+        <h2><span class="step-no">01</span>はじめに使う準備</h2>
+        <p class="dek">最初にひとつだけ、済ませておくと安心なことがある。</p>
+        <ol class="steps">
+          <li>ブラウザでこのアプリを開いたら、共有メニューから<strong>「ホーム画面に追加」</strong>を選んでみてほしい。アイコンの名前は「森とグミ」になる。</li>
+          <li>これをしておかないと、しばらく開かない間にiPhone側の仕組みでデータが消えてしまうことがある。<strong>ブラウザのタブのままでは使わないでね</strong>——気をつけてほしいのはそこだけ。</li>
+          <li>ホーム画面のアイコンから開けたら、準備は完了。あとは毎日、そこからのんびり開くだけでいい。</li>
+        </ol>
+        <div class="note"><div><b>おぼえておいてほしいこと</b>成績・XP・グミ・学習記録は、ぜんぶ<strong>この端末の中だけ</strong>にしまわれている。他の端末とは自動でつながらないので、機種変更のときは12章のバックアップコードを使ってね。</div></div>
+      </section>
+
+      <section class="card" id="home">
+        <h2><span class="step-no">02</span>ホーム画面の見方</h2>
+        <p class="dek">アプリを開いたときに見える景色を、ひとつずつ紹介する。</p>
+        <ul>
+          <li><strong>連続学習日数</strong> — 🔥のとなりの数字。今日1セットやれば続き、1日お休みすると0に戻ってしまう（休息チケットを使えば例外もある）。</li>
+          <li><strong>レベルとXPバー</strong> — 正解するほどXPが少しずつ貯まっていき、バーが満ちるとレベルアップする。くわしくは7章で。</li>
+          <li><strong>今週のミッション</strong> — Listening・Reading・がんばった（または復習）の3本。くわしくは9章で。</li>
+          <li><strong>推定スコア</strong> — 演習を重ねるたびに、そっと動いていく今のTOEIC実力の目安。くわしくは6章で。</li>
+          <li><strong>学習の記録（草）</strong> — 直近42日分の学習量を濃淡で表示。</li>
+          <li><strong>グミの瓶</strong> — 1セット終えるたびに、グミが1粒ずつ増えていく。</li>
+        </ul>
+        <p>「今日のミッションを始める」という、いちばん大きなボタンを押せば、今日の8問はアプリのほうで組んでおいてくれる。何を選ぶか迷わなくて大丈夫。</p>
+      </section>
+
+      <section class="card" id="diag">
+        <h2><span class="step-no">03</span>はじめての力だめし</h2>
+        <p class="dek">最初の1回だけ、20問（Listening 10・Reading 10）で今の実力をそっと確かめておく。</p>
+        <p>結果に合わせてListening・Readingそれぞれの初期の習熟度が調整され、以後のミッションでは苦手な方が少し多めに出るようになる。得意・不得意を自分で申告する必要はない。あとからも自然に調整されていくので、力だめしの結果に一喜一憂しなくて大丈夫。</p>
+        <p>「あとで」を選んでスキップしても大丈夫。通常のミッションを進めるうちに、同じように調整されていく。</p>
+      </section>
+
+      <section class="card" id="mission">
+        <h2><span class="step-no">04</span>今日のミッション</h2>
+        <p class="dek">1セット8問・約5分。開いたら最後まで終えられるくらいの、ちょうどいい大きさにしてある。</p>
+        <div class="fig-row">
+          <div class="fig"><div class="mini-timer"><i></i></div><span class="fig-cap">問題タイマー<br>（Part5・Part7のみ）</span></div>
+        </div>
+        <ul>
+          <li>選択肢をタップすると即座に正誤が分かり、簡単な解説が出る。「くわしい解説を見る」でもう一段階詳しい説明も読める。</li>
+          <li><strong>本当に分からないときは「わからない…」ボタン</strong>を押して大丈夫。誤答あつかいにはなるけれど、その場で答えと解説が開く。無理に勘で粘るより、ここで素直に答えを見て、ひとつ覚えてしまえば十分。</li>
+          <li>Part 5（文法・語彙）とPart 7（読解）には制限時間が付く。慣れてくるほど時間が少しずつ短くなり、「正確に」から「速く正確に」へと自然にレベルが上がっていく。時間切れになっても誤答あつかいにはなるけれど、正解がふわっと光って表示されるので、そこまで焦らなくて大丈夫。</li>
+          <li>10問中8問正解すると、そのスキルの難易度が1段階上がる（基礎→標準→本番速度）。</li>
+        </ul>
+        <div class="note"><div><b>答えを見たあとのこと</b>「わからない」や時間切れで答えを見た問題は、その場ではもう一度答えさせない。答えを見てから当てても、力にはなりにくいから——それだけのことだよ。</div></div>
+      </section>
+
+      <section class="card" id="review">
+        <h2><span class="step-no">05</span>まちがえた問題の復習</h2>
+        <p class="dek">間違えた問題は、ちゃんと後日また会いに来てくれる。</p>
+        <ol class="steps">
+          <li>間違えた問題は翌日のミッションに優先的に混ざる。</li>
+          <li>そこで正解できれば3日後にもう一度。</li>
+          <li>3日後にも正解できれば、その問題は卒業（以後は出ない）。</li>
+        </ol>
+        <p>しばらく触れていないスキルには「復習どき」のバッジがそっと付く（標準レベルは14日、本番速度レベルは21日が目安）。スキルマップ（10章）で見つけられる。</p>
+      </section>
+
+      <section class="card" id="score">
+        <h2><span class="step-no">06</span>推定スコア</h2>
+        <p class="dek">模擬テストのときだけでなく、<strong>ふだんの演習でも少しずつ動いていく。</strong></p>
+        <div class="fig-row">
+          <div class="fig"><div class="mini-bar"><i style="width:62%"></i></div><span class="fig-cap">850点までの距離を表示</span></div>
+        </div>
+        <p>Listening・Readingそれぞれの直近の正答率から、TOEIC本番のスコア目安（各5〜495点、合計10〜990点）を算出する。各セクションで8問ほど答えると表示され始め、以後は解くたびに少しずつ動く。模擬テストを受けている場合は、より信頼度の高い模試の結果を重めに加味して推定する。</p>
+        <p>ミッションを終えるたびに、リザルト画面で「このセットで推定 +◯点」のような一言が出る。伸びていなくても、気にしすぎなくて大丈夫。演習量が少ないうちは数字が振れやすいだけで、コツコツ続けるほど、だんだん落ち着いていくものだから。</p>
+      </section>
+
+      <section class="card" id="forest">
+        <h2><span class="step-no">07</span>あなたの森とグミ</h2>
+        <p class="dek">レベルアップで、森に木が1本育つ。セットを終えるたびに、グミが1粒増える。</p>
+        <div class="fig-row">
+          <div class="fig">
+            <div class="mini-forest"><i class="mini-tree"></i><i class="mini-tree t1"></i><i class="mini-tree t2"></i><i class="mini-tree t3"></i><i class="mini-tree"></i></div>
+            <span class="fig-cap">あなたの森</span>
+          </div>
+          <div class="fig">
+            <div class="mini-gummy-jar"><i class="mini-gummy g0"></i><i class="mini-gummy g1"></i><i class="mini-gummy g2"></i><i class="mini-gummy g3"></i></div>
+            <span class="fig-cap">グミコレクション</span>
+          </div>
+        </div>
+        <p>正解するたびに少しずつXPが貯まり、貯まるとレベルアップする。称号や順位ではなく、レベルが上がるたびに<strong>自分の森に木が1本育つ</strong>形で、積み上げを見せてくれる。木の本数が、そのままこれまで歩いてきた道のりになる。</p>
+        <p>グミは1セット終えるごとに、瓶へことりと1粒増える。いちばん素直なごほうびだと思う。正答率やコンボは関係なく、<strong>やった分だけ、ちゃんと増えていく。</strong></p>
+      </section>
+
+      <section class="card" id="streak">
+        <h2><span class="step-no">08</span>ストリークと休息チケット</h2>
+        <p class="dek">続けることを大事にしながらも、1日くらいのお休みは切り捨てない。</p>
+        <p>1日1セットで、連続学習日数がひとつずつ伸びていく。ただ、社会人には残業も出張もあるものだから——<strong>週に1枚の休息チケット</strong>を用意した。「昨日だけ」お休みしてしまった場合にかぎり、ホーム画面から使うとストリークを継続扱いにできる。2日以上空いてしまった場合は、さすがに対象外。使ったチケットは、週が明けるとまた1枚もどってくる。</p>
+      </section>
+
+      <section class="card" id="week">
+        <h2><span class="step-no">09</span>週間ミッション</h2>
+        <p class="dek">毎週月曜になると、新しく組み直される3本のミッション。</p>
+        <ul>
+          <li><strong>Listening</strong> / <strong>Reading</strong> — それぞれの演習で貯めたXPが目標に達すると達成。</li>
+          <li><strong>3本目</strong> — 復習どきのスキルがある週は「復習」、なければ「がんばった（セット数）」に自動で切り替わる。</li>
+        </ul>
+        <p>目標値は、前週の実績のだいたい85%を目安に、そのつど調整される（下限もある）。回数を固定していないXP制だから、日によって演習量がばらついても、そのぶんで損をすることはない。</p>
+      </section>
+
+      <section class="card" id="map">
+        <h2><span class="step-no">10</span>スキルマップと集中練習</h2>
+        <p class="dek">10のスキルの習熟度が一覧できる場所。</p>
+        <div class="tbl-wrap">
+          <table class="gloss">
+            <thead><tr><th>帯</th><th>スキル</th></tr></thead>
+            <tbody>
+              <tr><td>Listening</td><td>Part2応答・Part3/4パラフレーズ・音声語彙</td></tr>
+              <tr><td>Reading</td><td>Part5（品詞・動詞の形・前置詞vs接続詞・代名詞/関係詞・語彙）・語彙860レベル・Part7速読</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>各行をタップすると、そのスキルだけを8問続けて練習する「集中練習」がはじまる。ここを伸ばしたいな、と思ったときに使うとよい。「復習どき」のバッジが付いているスキルは、優先してのぞいてみてほしい。</p>
+      </section>
+
+      <section class="card" id="mock">
+        <h2><span class="step-no">11</span>模擬テストと受験日</h2>
+        <p class="dek">設定画面で受験日を登録すると、本番に向けた機能がそっと動き出す。</p>
+        <ul>
+          <li>ホーム最上部に「TOEICまで あと◯日」のカウントダウンが常時表示される。</li>
+          <li>模擬テスト（20問）はいつでも挑戦できる。出題範囲は設定画面でスキルを選んで絞り込める。</li>
+          <li>受験日<strong>28日前〜当日</strong>は「直前期」となり、直近の模擬テストで間違えたスキルが今日のミッションに優先的に混ざるようになる。</li>
+        </ul>
+        <p>模擬テストの結果はL/R別の推定スコアとともに記録され、設定画面で過去5回分をふり返れる。</p>
+      </section>
+
+      <section class="card" id="data">
+        <h2><span class="step-no">12</span>データの管理</h2>
+        <p class="dek">設定画面から、バックアップと全消去ができる。</p>
+        <h3>バックアップ（機種変更の備え）</h3>
+        <p>「コードを書き出す」を押すと <code>TOE1.</code> から始まる文字列が生成される（自動でコピーもされる）。メモアプリなどに保管しておき、新しい端末で同じアプリを開いたら「復元（読み込み）」に貼り付ければ、成績・XP・グミ・学習記録がすべて引き継がれる。</p>
+        <h3>全データの消去</h3>
+        <p>「すべてのデータを消す」→ 警告の表示 →「リセット」と入力、の3段階を踏まないと消えないようにしてある。最初からやり直したいとき以外は、そっとしておいて大丈夫。</p>
+      </section>
+
+      <section class="card" id="faq">
+        <h2><span class="step-no">13</span>よくある質問</h2>
+        <dl class="faq">
+          <dt>音声（🔊）が鳴らない</dt>
+          <dd>iPhoneのきまりで、音声は自分でタップした直後にしか鳴らせない。「🔊 きく」ボタンを、そのつどタップしてみてね。自動では鳴らない。</dd>
+          <dt>推定スコアがずっと「—」のまま</dt>
+          <dd>Listening・Readingそれぞれで8問ほど答えると、少しずつ表示され始める。どちらか一方だけに偏っていると出にくいので、LとRの両方に触れてみてね。</dd>
+          <dt>今日のミッションを最後までやらずに閉じてしまった</dt>
+          <dd>大丈夫。途中でホームに戻っても、そこまでの正解・XPはちゃんと記録されている。次に開いたときは、また新しいミッションが組まれるよ。</dd>
+          <dt>連続学習日数が0に戻ってしまった</dt>
+          <dd>2日以上空いてしまうと、休息チケットの対象外になってストリークはリセットされる。落ち込まなくて大丈夫、その日からまた始めればそれで十分。数字よりも、森の木の本数のほうが、積み上げてきたものに近い気がする。</dd>
+          <dt>ブラウザのアップデートや機種変更でデータが消えないか心配</dt>
+          <dd>12章のバックアップコードを、たまに書き出しておくと安心。とくに機種変更の前には、忘れずにやっておいてね。</dd>
+        </dl>
+      </section>
+    </main>
+  </div>
+
+  <footer class="end">森とグミ — TOEIC 750→850学習アプリ 取扱説明書</footer>
+</div>
+
+</body>
+</html>
