@@ -2102,6 +2102,14 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     state.history[today] = h;
   };
 
+  // 教科別のその日の回答数（ナツカン=夏休みTODOアプリが復習チェックの自動ON判定に読む）
+  LOGIC.recordSubjectAnswer = function (state, today, subject) {
+    var h = state.history[today] || { sets: 0, good: 0, total: 0 };
+    if (!h.subj) h.subj = {};
+    h.subj[subject] = (h.subj[subject] || 0) + 1;
+    state.history[today] = h;
+  };
+
   /* ---- 問題の組み立て ---- */
   function shuffle(a) {
     for (var i = a.length - 1; i > 0; i--) {
@@ -2155,8 +2163,10 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     if (!pool.length) pool = skill.sort.filter(function (x) { return x.t <= tier; });
     if (!pool.length) pool = skill.sort;
     var item = pick(pool);
+    // 文末の記号（. ? !）は語札から外す（付いている語が文末だと分かってしまうため）
+    var tokens = item.tokens.map(function (w) { return w.replace(/[.?!]+$/, ""); });
     return { type: "sort", text: "並べ替えて英文を作ろう", sub: "「" + item.jp + "」",
-      tokens: item.tokens.slice(), ans: item.tokens.join(" "),
+      tokens: tokens, ans: tokens.join(" "),
       exp: item.exp, speak: item.tokens.join(" "), detail: skill.lesson };
   };
   LOGIC.buildQuestion = function (profile, skillId, tier, mathgen) {
@@ -2563,12 +2573,11 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
       }
       run.xpGain += xpThis;
       if (ok) run.good++;
-      if (!run.isMock) {
-        var skillObj = PROFILE.skills.filter(function (s) { return s.id === q.skillId; })[0];
-        if (skillObj) {
-          var newlyWeek = LOGIC.applyWeekAnswer(state, skillObj, xpThis, today);
-          newlyWeek.forEach(function (k) { toast(weekAchieveText(k)); });
-        }
+      var skillObj = PROFILE.skills.filter(function (s) { return s.id === q.skillId; })[0];
+      if (skillObj) LOGIC.recordSubjectAnswer(state, today, skillObj.subject); // 模擬テスト中の回答も学習量として数える
+      if (!run.isMock && skillObj) {
+        var newlyWeek = LOGIC.applyWeekAnswer(state, skillObj, xpThis, today);
+        newlyWeek.forEach(function (k) { toast(weekAchieveText(k)); });
       }
       STORE.save(state);
     }
