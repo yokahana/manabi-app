@@ -1602,7 +1602,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
 (function (global) {
   "use strict";
 
-  // 語彙は光村図書「Here We Go!」（宇治市=山城採択地区）を想定した中3レベル
+  // 語彙は教科書（光村図書「Here We Go!」）を想定した中3レベル
   var VOCAB = [
     ["visit", "訪れる"], ["arrive", "到着する"], ["decide", "決める"], ["remember", "覚えている・思い出す"],
     ["forget", "忘れる"], ["borrow", "借りる"], ["carry", "運ぶ"], ["catch", "つかまえる"],
@@ -1660,7 +1660,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     { t: 1, q: "English is ___ in many countries.", opts: ["spoken", "speak", "speaking", "spoke"], a: 0, exp: "「話されている」= is spoken（speak の過去分詞）。" },
     { t: 1, q: "The window was ___ by Ken.", opts: ["broken", "broke", "break", "breaking"], a: 0, exp: "break の過去分詞は broken。was broken =「割られた」。" },
     { t: 1, q: "This room ___ cleaned every day.", opts: ["is", "was being", "has", "does"], a: 0, exp: "「毎日そうじされる」は現在の受動態 is cleaned。" },
-    { t: 2, q: "I have ___ in Uji for three years.", opts: ["lived", "live", "living", "lives"], a: 0, exp: "現在完了は have + 過去分詞。「ずっと住んでいる」。" },
+    { t: 2, q: "I have ___ in this town for three years.", opts: ["lived", "live", "living", "lives"], a: 0, exp: "現在完了は have + 過去分詞。「ずっと住んでいる」。" },
     { t: 2, q: "I have ___ finished my homework.（ちょうど終えた）", opts: ["just", "yet", "never", "since"], a: 0, exp: "「ちょうど〜したところ」は have just + 過去分詞。" },
     { t: 2, q: "I have known him ___ ten years.", opts: ["for", "since", "from", "in"], a: 0, exp: "「10年間」のような期間の長さは for。" },
     { t: 2, q: "She has been busy ___ this morning.", opts: ["since", "for", "from", "at"], a: 0, exp: "「〜以来ずっと」は since。期間の長さなら for。" },
@@ -1718,7 +1718,7 @@ h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
     { t: 1, jp: "その手紙は昨日送られました。", tokens: ["The", "letter", "was", "sent", "yesterday."], exp: "過去の受動態 was sent。" },
     { t: 1, jp: "この歌は多くの人に愛されています。", tokens: ["This", "song", "is", "loved", "by", "many", "people."], exp: "受動態 is loved + by。" },
     { t: 1, jp: "この部屋は毎日そうじされます。", tokens: ["This", "room", "is", "cleaned", "every", "day."], exp: "現在の受動態 is cleaned。" },
-    { t: 2, jp: "わたしは3年間、宇治に住んでいます。", tokens: ["I", "have", "lived", "in", "Uji", "for", "three", "years."], exp: "現在完了（継続）have lived + for。" },
+    { t: 2, jp: "わたしは3年間、この町に住んでいます。", tokens: ["I", "have", "lived", "in", "this", "town", "for", "three", "years."], exp: "現在完了（継続）have lived + for。" },
     { t: 2, jp: "わたしはちょうど昼食を終えたところです。", tokens: ["I", "have", "just", "finished", "lunch."], exp: "完了は have just + 過去分詞。" },
     { t: 2, jp: "わたしは10年間、彼を知っています。", tokens: ["I", "have", "known", "him", "for", "ten", "years."], exp: "have known + for（期間）。" },
     { t: 3, jp: "あなたは今までに北海道へ行ったことがありますか。", tokens: ["Have", "you", "ever", "been", "to", "Hokkaido?"], exp: "経験は Have you ever been to 〜?" },
